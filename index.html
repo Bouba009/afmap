@@ -4,613 +4,585 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AFMAP - المؤسسة الجزائرية للنباتات الطبية</title>
-    <!-- Fonts & Icons -->
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
         :root {
-            --primary: #2e7d32; /* أخضر طبي */
+            --primary: #2e7d32;
             --secondary: #81c784;
             --accent: #ffb74d;
             --dark: #1b5e20;
-            --bg: #f4f9f4;
-            --white: #ffffff;
-            --shadow: 0 10px 30px rgba(0,0,0,0.1);
+            --bg: #f8fcf8;
+            --sidebar-width: 280px;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Cairo', sans-serif; outline: none; }
         body { background-color: var(--bg); overflow-x: hidden; scroll-behavior: smooth; }
         
         /* --- Animations --- */
-        .reveal { opacity: 0; transform: translateY(50px); transition: all 1s ease; }
-        .reveal.active { opacity: 1; transform: translateY(0); }
-        
-        @keyframes float { 0% { transform: translateY(0px); } 50% { transform: translateY(-10px); } 100% { transform: translateY(0px); } }
-        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(46, 125, 50, 0.7); } 70% { box-shadow: 0 0 0 15px rgba(46, 125, 50, 0); } 100% { box-shadow: 0 0 0 0 rgba(46, 125, 50, 0); } }
+        .fade-in { animation: fadeIn 0.5s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* --- UI Components --- */
-        .btn { padding: 10px 25px; border-radius: 50px; border: none; cursor: pointer; font-weight: bold; transition: 0.3s; display: inline-flex; align-items: center; gap: 10px; }
-        .btn-primary { background: var(--primary); color: white; box-shadow: 0 4px 15px rgba(46, 125, 50, 0.3); }
-        .btn-primary:hover { background: var(--dark); transform: translateY(-3px); }
-        .section-title { text-align: center; font-size: 2.5rem; color: var(--dark); margin-bottom: 40px; position: relative; }
-        .section-title::after { content: ''; display: block; width: 80px; height: 4px; background: var(--accent); margin: 10px auto; border-radius: 2px; }
+        /* --- Flair Text (News Ticker) --- */
+        .flair-bar {
+            background: var(--dark);
+            color: white;
+            font-size: 0.9rem;
+            padding: 8px 0;
+            overflow: hidden;
+            white-space: nowrap;
+            position: relative;
+            z-index: 1002;
+        }
+        .flair-content {
+            display: inline-block;
+            animation: scroll-left 20s linear infinite;
+            padding-left: 100%;
+        }
+        @keyframes scroll-left { 0% { transform: translateX(0); } 100% { transform: translateX(100%); } } /* Adjusted for RTL */
 
-        /* --- Header --- */
-        header { background: rgba(255,255,255,0.95); padding: 15px 5%; position: fixed; width: 100%; top: 0; z-index: 1000; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 20px rgba(0,0,0,0.05); backdrop-filter: blur(10px); }
-        .logo { font-size: 1.8rem; font-weight: 900; color: var(--primary); display: flex; align-items: center; gap: 10px; }
-        .nav-links { display: flex; gap: 20px; }
-        .nav-links a { text-decoration: none; color: #333; font-weight: 600; transition: 0.3s; }
-        .nav-links a:hover { color: var(--primary); }
-        .admin-btn { font-size: 0.8rem; background: #333; color: white; padding: 5px 15px; border-radius: 5px; cursor: pointer; }
+        /* --- Header & Navigation --- */
+        header {
+            background: rgba(255,255,255,0.95);
+            padding: 10px 20px;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
 
-        /* --- Hero Slider --- */
-        .hero { height: 100vh; position: relative; display: flex; align-items: center; justify-content: center; overflow: hidden; color: white; text-align: center; }
-        .hero-bg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-size: cover; background-position: center; transition: 0.5s; z-index: -1; filter: brightness(0.4); }
-        .hero-content h1 { font-size: 3.5rem; margin-bottom: 20px; animation: float 6s ease-in-out infinite; text-shadow: 0 5px 15px rgba(0,0,0,0.5); }
-        .hero-content p { font-size: 1.5rem; margin-bottom: 30px; font-weight: 300; }
-        .event-badge { background: var(--accent); color: #000; padding: 5px 15px; border-radius: 20px; font-weight: bold; font-size: 1rem; margin-bottom: 20px; display: inline-block; animation: pulse 2s infinite; }
+        .logo-container img { height: 50px; }
+        .menu-btn { font-size: 1.5rem; color: var(--primary); cursor: pointer; border: none; background: none; }
+
+        /* --- Sidebar --- */
+        .sidebar-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5); z-index: 1001; display: none;
+        }
+        .side-menu {
+            position: fixed; top: 0; right: -300px; width: var(--sidebar-width); height: 100%;
+            background: white; z-index: 1002; transition: 0.3s; padding: 20px;
+            display: flex; flex-direction: column; box-shadow: -5px 0 15px rgba(0,0,0,0.1);
+        }
+        .side-menu.active { right: 0; }
+        .close-menu { align-self: flex-end; font-size: 1.5rem; cursor: pointer; margin-bottom: 20px; }
+        .side-link {
+            padding: 15px; border-bottom: 1px solid #eee; text-decoration: none;
+            color: #333; font-weight: bold; display: flex; align-items: center; gap: 10px;
+            transition: 0.3s;
+        }
+        .side-link:hover { background: var(--bg); color: var(--primary); padding-right: 20px; }
+        .admin-login-link { margin-top: auto; background: var(--dark); color: white; border-radius: 8px; text-align: center; justify-content: center; }
+        .admin-login-link:hover { color: var(--accent); background: #000; }
+
+        /* --- Hero Section --- */
+        .hero {
+            height: 80vh; position: relative; display: flex; align-items: center; justify-content: center;
+            text-align: center; color: white; background-size: cover; background-position: center;
+        }
+        .hero::before { content: ''; position: absolute; inset: 0; background: rgba(0,0,0,0.4); }
+        .hero-content { position: relative; z-index: 2; padding: 20px; }
+        .hero h1 { font-size: 2.5rem; margin-bottom: 15px; }
+        .event-badge { background: var(--accent); color: #000; padding: 5px 15px; border-radius: 20px; font-weight: bold; display: inline-block; margin-bottom: 20px; }
+
+        /* --- Sections --- */
+        .section-container { padding: 50px 5%; }
+        .section-title { text-align: center; margin-bottom: 40px; color: var(--dark); font-size: 2rem; position: relative; }
+        .section-title::after { content: ''; display: block; width: 60px; height: 3px; background: var(--primary); margin: 10px auto; }
+
+        /* --- Grid & Cards --- */
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
+        .card { background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.05); transition: 0.3s; }
+        .card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
+        .card-img { width: 100%; height: 180px; object-fit: cover; }
+        .card-body { padding: 15px; }
+        .card h3 { color: var(--primary); font-size: 1.1rem; margin-bottom: 5px; }
+        .card-meta { display: flex; justify-content: space-between; margin-top: 15px; padding-top: 10px; border-top: 1px solid #eee; }
+        .meta-btn { text-decoration: none; color: #555; font-size: 0.9rem; }
+        .meta-btn:hover { color: var(--primary); }
+
+        /* --- Blog Special --- */
+        .blog-btn { background: var(--primary); color: white; padding: 8px 15px; border-radius: 5px; text-decoration: none; display: inline-block; margin-top: 10px; font-size: 0.9rem; cursor: pointer; }
 
         /* --- Stats Bar --- */
-        .stats-bar { background: var(--primary); display: flex; justify-content: space-around; padding: 40px 10%; color: white; margin-top: -50px; position: relative; z-index: 10; border-radius: 20px 20px 0 0; width: 90%; margin-left: auto; margin-right: auto; box-shadow: var(--shadow); flex-wrap: wrap; gap: 20px; }
-        .stat-item { text-align: center; flex: 1; min-width: 150px; }
-        .stat-num { font-size: 2.5rem; font-weight: 900; display: block; }
-        .stat-label { font-size: 1.1rem; opacity: 0.9; }
-
-        /* --- Generic Grid --- */
-        .grid-container { padding: 80px 10%; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px; }
-        
-        .card { background: white; border-radius: 15px; overflow: hidden; box-shadow: var(--shadow); transition: 0.4s; position: relative; }
-        .card:hover { transform: translateY(-10px); }
-        .card-img { width: 100%; height: 200px; object-fit: cover; }
-        .card-body { padding: 20px; }
-        .card h3 { color: var(--dark); margin-bottom: 10px; }
-        .card p { color: #666; font-size: 0.9rem; line-height: 1.6; }
-
-        /* --- Founders (Round) --- */
-        .founder-card { text-align: center; background: transparent; box-shadow: none; }
-        .founder-img { width: 180px; height: 180px; border-radius: 50%; object-fit: cover; border: 5px solid var(--secondary); margin-bottom: 15px; transition: 0.3s; }
-        .founder-card:hover .founder-img { border-color: var(--primary); transform: rotate(5deg); }
-        .founder-role { color: var(--primary); font-weight: bold; font-size: 0.9rem; }
+        .stats-bar { background: var(--primary); padding: 30px 5%; color: white; display: flex; flex-wrap: wrap; gap: 20px; justify-content: space-around; text-align: center; }
+        .stat-num { font-size: 2rem; font-weight: bold; display: block; }
 
         /* --- Footer --- */
-        footer { background: #222; color: white; padding: 60px 10%; text-align: center; margin-top: 50px; }
-        .footer-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 40px; text-align: right; margin-bottom: 40px; }
-        .footer-col h4 { color: var(--accent); margin-bottom: 20px; font-size: 1.2rem; }
-        .footer-col ul { list-style: none; }
-        .footer-col li { margin-bottom: 10px; }
-        .footer-col a { color: #aaa; text-decoration: none; transition: 0.3s; }
-        .footer-col a:hover { color: white; padding-right: 5px; }
+        footer { background: #222; color: #ccc; padding: 40px 20px; text-align: center; margin-top: 50px; }
 
-        /* ================= ADMIN PANEL STYLES ================= */
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 2000; display: none; justify-content: center; align-items: center; backdrop-filter: blur(5px); }
-        .admin-panel { background: white; width: 90%; max-width: 1000px; height: 90vh; border-radius: 15px; display: flex; overflow: hidden; }
+        /* --- Admin & Modals --- */
+        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 2000; display: none; justify-content: center; align-items: center; padding: 20px; overflow-y: auto; }
+        .modal-content { background: white; padding: 25px; border-radius: 10px; width: 100%; max-width: 500px; position: relative; max-height: 90vh; overflow-y: auto; }
+        .full-screen-modal { max-width: 95%; height: 95vh; }
         
-        .sidebar { width: 250px; background: #333; color: white; padding: 20px; display: flex; flex-direction: column; }
-        .sidebar h3 { margin-bottom: 30px; color: var(--accent); text-align: center; }
-        .sidebar button { background: none; border: none; color: #ddd; padding: 15px; text-align: right; cursor: pointer; width: 100%; transition: 0.3s; font-size: 1rem; border-bottom: 1px solid #444; }
-        .sidebar button:hover, .sidebar button.active { background: var(--primary); color: white; padding-right: 25px; }
-        .logout-btn { margin-top: auto; background: #c62828 !important; }
-
-        .content-area { flex: 1; padding: 30px; overflow-y: auto; background: #f1f1f1; }
-        .tab-content { display: none; }
-        .tab-content.active { display: block; animation: fadeIn 0.5s; }
-
-        /* Admin Forms */
+        /* Admin Dashboard Styles */
+        .dashboard-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 2px solid #eee; padding-bottom: 10px; }
+        .stats-overview { display: flex; gap: 10px; margin-bottom: 20px; background: #e8f5e9; padding: 10px; border-radius: 8px; }
+        .stat-box { flex: 1; text-align: center; }
+        .stat-box strong { font-size: 1.2rem; color: var(--primary); display: block; }
+        
+        .tab-btn { padding: 8px 12px; border: 1px solid #ddd; background: #f9f9f9; cursor: pointer; margin-bottom: 5px; border-radius: 4px; }
+        .tab-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
+        
         .form-group { margin-bottom: 15px; }
-        .form-group label { display: block; margin-bottom: 5px; font-weight: bold; }
-        .form-group input, .form-group textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; }
-        .item-row { background: white; padding: 15px; margin-bottom: 10px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; border-right: 4px solid var(--primary); }
-        .btn-delete { background: #e53935; color: white; padding: 5px 10px; border: none; border-radius: 5px; cursor: pointer; }
+        .form-group label { display: block; font-weight: bold; margin-bottom: 5px; font-size: 0.9rem; }
+        .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; }
+        .btn { padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; transition: 0.3s; }
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-danger { background: #d32f2f; color: white; }
+        .btn-secondary { background: #555; color: white; }
 
-        /* Login Box */
-        .login-box { background: white; padding: 40px; border-radius: 10px; width: 350px; text-align: center; }
-        
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        /* Responsive */
+        @media (min-width: 768px) {
+            .grid { grid-template-columns: repeat(3, 1fr); }
+            .hero h1 { font-size: 3.5rem; }
+        }
     </style>
 </head>
 <body>
 
+    <!-- Flair Text -->
+    <div class="flair-bar" id="flair-bar">
+        <div class="flair-content" id="flair-text">مرحباً بكم في الموقع الرسمي للمؤسسة الجزائرية للنباتات الطبية والعطرية</div>
+    </div>
+
     <!-- Header -->
     <header>
-        <div class="logo"><i class="fas fa-leaf"></i> AFMAP</div>
-        <div class="nav-links">
-            <a href="#hero">الرئيسية</a>
-            <a href="#services">الخدمات</a>
-            <a href="#products">المنتجات</a>
-            <a href="#blog">المدونة</a>
-            <a href="#about">من نحن</a>
+        <div class="logo-container" id="logo-display">
+            <!-- Logo Injected Here -->
+             <h2 style="color: var(--primary);">AFMAP</h2>
         </div>
-        <button class="admin-btn" onclick="toggleLoginModal()">دخول المدير</button>
+        <button class="menu-btn" onclick="toggleMenu()"><i class="fas fa-bars"></i></button>
     </header>
 
-    <!-- Hero Section -->
+    <!-- Side Menu -->
+    <div class="sidebar-overlay" onclick="toggleMenu()" id="overlay"></div>
+    <div class="side-menu" id="side-menu">
+        <div class="close-menu" onclick="toggleMenu()">&times;</div>
+        <a href="#hero" class="side-link" onclick="toggleMenu()"><i class="fas fa-home"></i> الرئيسية</a>
+        <a href="#services" class="side-link" onclick="toggleMenu()"><i class="fas fa-hand-holding-heart"></i> الخدمات</a>
+        <a href="#products" class="side-link" onclick="toggleMenu()"><i class="fas fa-leaf"></i> المنتجات</a>
+        <a href="#blog" class="side-link" onclick="toggleMenu()"><i class="fas fa-newspaper"></i> المدونة</a>
+        <a href="#about" class="side-link" onclick="toggleMenu()"><i class="fas fa-info-circle"></i> من نحن</a>
+        <a href="#contact" class="side-link" onclick="toggleMenu()"><i class="fas fa-envelope"></i> اتصل بنا</a>
+        <a href="#" class="side-link admin-login-link" onclick="openLoginModal()"><i class="fas fa-user-shield"></i> دخول الأدمن</a>
+    </div>
+
+    <!-- Hero -->
     <section class="hero" id="hero">
-        <div class="hero-bg" id="hero-bg-el"></div>
-        <div class="hero-content">
-            <div class="event-badge reveal" id="hero-badge-el">NEXT EVENT Loading...</div>
-            <h1 id="hero-title-el" class="reveal">Welcome to AFMAP</h1>
-            <p id="hero-desc-el" class="reveal">المؤسسة الرائدة في النباتات الطبية</p>
-            <button class="btn btn-primary reveal"><i class="fas fa-book-open"></i> تصفح الكتالوج</button>
+        <div class="hero-content fade-in">
+            <div class="event-badge" id="hero-event">NEXT EVENT LOADING...</div>
+            <h1 id="hero-title">AFMAP</h1>
+            <p id="hero-desc">الطبيعة بين أيدينا</p>
         </div>
     </section>
 
-    <!-- Stats Bar -->
-    <div class="stats-bar reveal" id="stats-container">
-        <!-- JS Injected -->
+    <!-- Stats -->
+    <div class="stats-bar" id="stats-display">
+        <!-- Injected via JS -->
     </div>
 
-    <!-- About Section -->
-    <section class="grid-container" id="about">
+    <!-- About -->
+    <section class="section-container" id="about">
         <h2 class="section-title">من نحن</h2>
-        <div style="text-align: center; max-width: 800px; margin: 0 auto; line-height: 1.8;">
-            <p>المؤسسة الجزائرية للنباتات الطبية والعطرية (AFMAP) هي هيئة رائدة تسعى لتطوير البحث العلمي في مجال الأعشاب الطبية، وحماية التراث النباتي الجزائري، وتعزيز الصناعات التحويلية الطبيعية.</p>
+        <div style="text-align: center; max-width: 800px; margin: 0 auto; line-height: 1.8; color: #555;">
+            <p>نحن مؤسسة رائدة نسعى لتثمين الثروة النباتية في الجزائر من خلال البحث العلمي والتطوير المستدام.</p>
         </div>
     </section>
 
     <!-- Services -->
-    <section class="grid-container" style="background: white;" id="services">
+    <section class="section-container" style="background: white;" id="services">
         <h2 class="section-title">خدماتنا</h2>
-        <div class="grid" id="services-grid">
-            <!-- JS Injected -->
-        </div>
+        <div class="grid" id="services-grid"></div>
     </section>
 
     <!-- Products -->
-    <section class="grid-container" id="products">
-        <h2 class="section-title">منتجاتنا الطبيعية</h2>
-        <div class="grid" id="products-grid">
-            <!-- JS Injected -->
-        </div>
-    </section>
-
-    <!-- Events & Participation -->
-    <section class="grid-container" style="background: white;" id="events">
-        <h2 class="section-title">الفعاليات والمشاركات</h2>
-        <div class="grid" id="events-grid">
-            <!-- JS Injected -->
-        </div>
+    <section class="section-container" id="products">
+        <h2 class="section-title">منتجاتنا</h2>
+        <div class="grid" id="products-grid"></div>
     </section>
 
     <!-- Blog -->
-    <section class="grid-container" id="blog">
-        <h2 class="section-title">المدونة العلمية</h2>
-        <div class="grid" id="blog-grid">
-            <!-- JS Injected -->
-        </div>
+    <section class="section-container" style="background: white;" id="blog">
+        <h2 class="section-title">المدونة</h2>
+        <div class="grid" id="blog-grid"></div>
     </section>
 
     <!-- Founders -->
-    <section class="grid-container" style="background: #e8f5e9;" id="founders">
+    <section class="section-container" id="founders">
         <h2 class="section-title">المؤسسين</h2>
-        <div class="grid" id="founders-grid">
-            <!-- JS Injected -->
+        <div class="grid" id="founders-grid"></div>
+    </section>
+
+    <!-- Contact -->
+    <section class="section-container" style="background: #2e7d32; color: white;" id="contact">
+        <h2 class="section-title" style="color: white; border-color: white;">اتصل بنا</h2>
+        <div style="text-align: center;">
+            <p><i class="fas fa-phone"></i> 0540043640</p>
+            <p><i class="fas fa-envelope"></i> info@afmap-dz.com</p>
+            <p><i class="fas fa-map-marker-alt"></i> الجزائر، العاصمة</p>
         </div>
     </section>
 
-    <!-- Footer -->
     <footer>
-        <div class="footer-grid">
-            <div class="footer-col">
-                <h4>AFMAP</h4>
-                <p>نهتم بالطبيعة لنصنع المستقبل.</p>
-            </div>
-            <div class="footer-col">
-                <h4>روابط سريعة</h4>
-                <ul>
-                    <li><a href="#">سياسة الخصوصية</a></li>
-                    <li><a href="#">من نحن</a></li>
-                    <li><a href="#">الكتالوج</a></li>
-                </ul>
-            </div>
-            <div class="footer-col">
-                <h4>اتصل بنا</h4>
-                <ul>
-                    <li><i class="fas fa-phone"></i> 0540043640</li>
-                    <li><i class="fas fa-envelope"></i> info@afmap-dz.com</li>
-                    <li><i class="fas fa-map-marker-alt"></i> Rouiba, Alger</li>
-                </ul>
-            </div>
-        </div>
-        <p>&copy; 2026 AFMAP. جميع الحقوق محفوظة.</p>
+        <p>جميع الحقوق محفوظة &copy; 2026 AFMAP</p>
     </footer>
 
-    <!-- ================= MODALS ================= -->
+    <!-- ================== MODALS ================== -->
+
+    <!-- Blog Reader Modal -->
+    <div class="modal" id="blog-modal">
+        <div class="modal-content">
+            <span onclick="document.getElementById('blog-modal').style.display='none'" style="float:left; cursor:pointer; font-size:1.5rem;">&times;</span>
+            <img id="reader-img" src="" style="width:100%; height:200px; object-fit:cover; border-radius:10px;">
+            <h2 id="reader-title" style="margin: 15px 0; color: var(--primary);"></h2>
+            <div id="reader-content" style="line-height: 1.8; color: #444; white-space: pre-line;"></div>
+        </div>
+    </div>
 
     <!-- Login Modal -->
-    <div class="modal-overlay" id="login-modal">
-        <div class="login-box">
-            <h2 style="margin-bottom: 20px; color: var(--primary);">تسجيل الدخول</h2>
-            <div class="form-group">
-                <input type="text" id="username" placeholder="اسم المستخدم">
-            </div>
-            <div class="form-group">
-                <input type="password" id="password" placeholder="كلمة المرور">
-            </div>
-            <button class="btn btn-primary" onclick="login()" style="width: 100%; justify-content: center;">دخول</button>
-            <button class="btn" onclick="toggleLoginModal()" style="margin-top: 10px; color: #666;">إلغاء</button>
+    <div class="modal" id="login-modal">
+        <div class="modal-content" style="max-width: 350px; text-align: center;">
+            <h3 style="margin-bottom: 15px;">تسجيل الدخول</h3>
+            <div class="form-group"><input type="text" id="admin-user" placeholder="اسم المستخدم"></div>
+            <div class="form-group"><input type="password" id="admin-pass" placeholder="كلمة المرور"></div>
+            <button class="btn btn-primary" style="width:100%" onclick="checkLogin()">دخول</button>
+            <button class="btn" style="width:100%; margin-top:5px;" onclick="closeLogin()">إلغاء</button>
         </div>
     </div>
 
-    <!-- Admin Panel -->
-    <div class="modal-overlay" id="admin-panel">
-        <div class="admin-panel">
-            <div class="sidebar">
-                <h3>لوحة التحكم</h3>
-                <button class="active" onclick="switchTab('tab-hero')">الواجهة الرئيسية</button>
-                <button onclick="switchTab('tab-stats')">الإحصائيات</button>
-                <button onclick="switchTab('tab-products')">المنتجات</button>
-                <button onclick="switchTab('tab-services')">الخدمات</button>
-                <button onclick="switchTab('tab-events')">الفعاليات</button>
-                <button onclick="switchTab('tab-blog')">المدونة</button>
-                <button onclick="switchTab('tab-founders')">المؤسسين</button>
-                <button class="logout-btn" onclick="logout()">خروج <i class="fas fa-sign-out-alt"></i></button>
-                <button onclick="closeAdminPanel()" style="background: #444; margin-top: 10px;">إغلاق اللوحة</button>
+    <!-- Admin Dashboard -->
+    <div class="modal" id="admin-dashboard">
+        <div class="modal-content full-screen-modal">
+            <div class="dashboard-header">
+                <h2>لوحة التحكم</h2>
+                <button class="btn btn-danger" onclick="logout()">خروج</button>
+            </div>
+
+            <!-- Visitor Stats -->
+            <div class="stats-overview">
+                <div class="stat-box"><strong>الزيارات اليوم</strong><span id="daily-visits">0</span></div>
+                <div class="stat-box"><strong>الزيارات هذا الشهر</strong><span id="monthly-visits">0</span></div>
+            </div>
+
+            <!-- Tabs -->
+            <div style="display: flex; gap: 10px; overflow-x: auto; padding-bottom: 10px; margin-bottom: 15px;">
+                <button class="tab-btn active" onclick="showTab('settings')">إعدادات عامة</button>
+                <button class="tab-btn" onclick="showTab('tab-services')">الخدمات</button>
+                <button class="tab-btn" onclick="showTab('tab-products')">المنتجات</button>
+                <button class="tab-btn" onclick="showTab('tab-blog')">المدونة</button>
+                <button class="tab-btn" onclick="showTab('tab-founders')">المؤسسين</button>
+            </div>
+
+            <div id="admin-content-area">
+                <!-- Content injected via JS based on Tab -->
             </div>
             
-            <div class="content-area">
-                <!-- Tab: Hero -->
-                <div id="tab-hero" class="tab-content active">
-                    <h2>تعديل الواجهة الرئيسية</h2>
-                    <div class="form-group">
-                        <label>رابط صورة الخلفية</label>
-                        <input type="text" id="edit-hero-img">
-                    </div>
-                    <div class="form-group">
-                        <label>عنوان الحدث القادم (Event)</label>
-                        <input type="text" id="edit-hero-event">
-                    </div>
-                    <div class="form-group">
-                        <label>العنوان الرئيسي</label>
-                        <input type="text" id="edit-hero-title">
-                    </div>
-                    <button class="btn btn-primary" onclick="saveHero()">حفظ التغييرات</button>
-                </div>
-
-                <!-- Tab: Stats -->
-                <div id="tab-stats" class="tab-content">
-                    <h2>تعديل الإحصائيات</h2>
-                    <div class="form-group">
-                        <label>عدد النباتات</label>
-                        <input type="text" id="stat-plants">
-                    </div>
-                    <div class="form-group">
-                        <label>عدد الباحثين</label>
-                        <input type="text" id="stat-researchers">
-                    </div>
-                    <div class="form-group">
-                        <label>عدد الدراسات</label>
-                        <input type="text" id="stat-studies">
-                    </div>
-                    <button class="btn btn-primary" onclick="saveStats()">حفظ</button>
-                </div>
-
-                <!-- Tab: Products -->
-                <div id="tab-products" class="tab-content">
-                    <h2>إدارة المنتجات</h2>
-                    <div class="form-group" style="background: #ddd; padding: 15px; border-radius: 8px;">
-                        <input type="text" id="new-prod-name" placeholder="اسم المنتج" style="margin-bottom: 5px;">
-                        <input type="text" id="new-prod-img" placeholder="رابط الصورة" style="margin-bottom: 5px;">
-                        <textarea id="new-prod-desc" placeholder="وصف المنتج"></textarea>
-                        <button class="btn btn-primary" onclick="addItem('products')">إضافة منتج</button>
-                    </div>
-                    <div id="admin-products-list"></div>
-                </div>
-
-                <!-- Tab: Services -->
-                <div id="tab-services" class="tab-content">
-                    <h2>إدارة الخدمات</h2>
-                    <div class="form-group" style="background: #ddd; padding: 15px; border-radius: 8px;">
-                        <input type="text" id="new-serv-name" placeholder="اسم الخدمة">
-                        <textarea id="new-serv-desc" placeholder="وصف الخدمة"></textarea>
-                        <button class="btn btn-primary" onclick="addItem('services')">إضافة خدمة</button>
-                    </div>
-                    <div id="admin-services-list"></div>
-                </div>
-
-                 <!-- Tab: Events -->
-                 <div id="tab-events" class="tab-content">
-                    <h2>إدارة الفعاليات</h2>
-                    <div class="form-group" style="background: #ddd; padding: 15px; border-radius: 8px;">
-                        <input type="text" id="new-event-name" placeholder="عنوان الفعالية">
-                        <input type="text" id="new-event-img" placeholder="رابط الصورة">
-                        <textarea id="new-event-desc" placeholder="التفاصيل"></textarea>
-                        <button class="btn btn-primary" onclick="addItem('events')">إضافة فعالية</button>
-                    </div>
-                    <div id="admin-events-list"></div>
-                </div>
-
-                <!-- Tab: Blog -->
-                <div id="tab-blog" class="tab-content">
-                    <h2>إدارة المدونة</h2>
-                    <div class="form-group" style="background: #ddd; padding: 15px; border-radius: 8px;">
-                        <input type="text" id="new-blog-name" placeholder="عنوان المقال">
-                        <input type="text" id="new-blog-img" placeholder="رابط الصورة">
-                        <textarea id="new-blog-desc" placeholder="مقتطف المقال"></textarea>
-                        <button class="btn btn-primary" onclick="addItem('blog')">نشر مقال</button>
-                    </div>
-                    <div id="admin-blog-list"></div>
-                </div>
-
-                <!-- Tab: Founders -->
-                <div id="tab-founders" class="tab-content">
-                    <h2>المؤسسين</h2>
-                    <div class="form-group" style="background: #ddd; padding: 15px; border-radius: 8px;">
-                        <input type="text" id="new-founder-name" placeholder="الاسم" style="margin-bottom: 5px;">
-                        <input type="text" id="new-founder-role" placeholder="المهنة/الدور" style="margin-bottom: 5px;">
-                        <input type="text" id="new-founder-img" placeholder="رابط الصورة">
-                        <button class="btn btn-primary" onclick="addFounder()">إضافة مؤسس</button>
-                    </div>
-                    <div id="admin-founders-list"></div>
-                </div>
-
-            </div>
+            <button class="btn btn-secondary" onclick="document.getElementById('admin-dashboard').style.display='none'" style="margin-top:20px;">إغلاق اللوحة</button>
         </div>
     </div>
 
-    <!-- JAVASCRIPT LOGIC -->
     <script>
         // --- DATA STRUCTURE ---
         const defaultData = {
-            hero: {
-                img: "https://images.unsplash.com/photo-1466692476868-aef1dfb1e735?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80",
-                event: "NEXT EVENT 17 FEV 2026 - BAB EZZOUAR",
-                title: "المؤسسة الجزائرية للنباتات الطبية",
-                desc: "نحو مستقبل أخضر ومستدام"
+            settings: {
+                logo: null, // Base64
+                flair: "مرحباً بكم في الموقع الرسمي - آخر الأخبار والفعاليات",
+                heroImg: "https://images.unsplash.com/photo-1501004318641-b39e6451bec6?w=1350",
+                heroTitle: "AFMAP",
+                heroEvent: "Event: 17 Feb 2026",
+                stats: { s1: "+700 نبات", s2: "+160 باحث", s3: "+50 دراسة" }
             },
-            stats: { plants: "+700", researchers: "+166", studies: "+263" },
-            services: [
-                { id: 1, title: "تحاليل مخبرية", desc: "نقدم خدمات تحليل جودة الزيوت العطرية والنباتات." },
-                { id: 2, title: "استشارات زراعية", desc: "مرافقة المزارعين لإنتاج محاصيل طبية ناجحة." },
-                { id: 3, title: "دورات تكوينية", desc: "تعليم استخلاص الزيوت وصناعة الصابون الطبيعي." }
-            ],
-            products: [
-                { id: 1, title: "زيت إكليل الجبل", img: "https://images.unsplash.com/photo-1515688594390-b649af70d282?w=500", desc: "زيت نقي 100% للشعر والبشرة." },
-                { id: 2, title: "شتلات اللافندر", img: "https://images.unsplash.com/photo-1471943311424-64942b855297?w=500", desc: "شتلات مهيأة للزراعة المنزلية." }
-            ],
-            events: [
-                { id: 1, title: "معرض الزيوت 2025", img: "https://images.unsplash.com/photo-1511578314322-379afb476865?w=500", desc: "مشاركة المؤسسة في المعرض الوطني." }
-            ],
-            blog: [
-                { id: 1, title: "فوائد الزعتر البري", img: "https://plus.unsplash.com/premium_photo-1675715878418-4c125d02325c?w=500", desc: "دراسة حديثة حول فوائد الزعتر للمناعة." }
-            ],
-            founders: [
-                { id: 1, name: "مصطفى رحمون", role: "المدير العام", img: "https://randomuser.me/api/portraits/men/32.jpg" },
-                { id: 2, name: "د. محمد خليل", role: "رئيس المجلس العلمي", img: "https://randomuser.me/api/portraits/men/45.jpg" }
-            ]
+            visits: { daily: 12, monthly: 340, lastDate: new Date().toLocaleDateString() },
+            services: [],
+            products: [],
+            blog: [],
+            founders: []
         };
 
-        let data = JSON.parse(localStorage.getItem('afmapDB')) || defaultData;
+        let db = JSON.parse(localStorage.getItem('afmap_v2')) || defaultData;
 
-        // --- RENDER FUNCTIONS ---
-        function renderAll() {
-            // Hero
-            document.getElementById('hero-bg-el').style.backgroundImage = `url('${data.hero.img}')`;
-            document.getElementById('hero-badge-el').innerText = data.hero.event;
-            document.getElementById('hero-title-el').innerText = data.hero.title;
-            
-            // Stats
-            document.getElementById('stats-container').innerHTML = `
-                <div class="stat-item"><span class="stat-num">${data.stats.plants}</span><span class="stat-label"><i class="fas fa-leaf"></i> نباتات</span></div>
-                <div class="stat-item"><span class="stat-num">${data.stats.researchers}</span><span class="stat-label"><i class="fas fa-user-graduate"></i> باحث</span></div>
-                <div class="stat-item"><span class="stat-num">${data.stats.studies}</span><span class="stat-label"><i class="fas fa-flask"></i> دراسات</span></div>
-            `;
-
-            // Services
-            renderGrid('services-grid', data.services, 'خدمة');
-            
-            // Products
-            renderGrid('products-grid', data.products, 'منتج', true);
-
-            // Events
-            renderGrid('events-grid', data.events, 'فعالية', true);
-
-            // Blog
-            renderGrid('blog-grid', data.blog, 'مقال', true);
-
-            // Founders
-            const fContainer = document.getElementById('founders-grid');
-            fContainer.innerHTML = '';
-            data.founders.forEach(f => {
-                fContainer.innerHTML += `
-                <div class="card founder-card reveal">
-                    <img src="${f.img}" class="founder-img">
-                    <h3>${f.name}</h3>
-                    <div class="founder-role">${f.role}</div>
-                </div>`;
-            });
-            
-            checkScroll();
-        }
-
-        function renderGrid(elementId, arrayData, type, hasImage = false) {
-            const container = document.getElementById(elementId);
-            container.innerHTML = '';
-            arrayData.forEach(item => {
-                let imgHTML = hasImage ? `<img src="${item.img}" class="card-img" alt="${item.title}">` : '';
-                // For Services (Icons) vs Others (Images)
-                if(!hasImage && type === 'خدمة') {
-                    imgHTML = `<div style="text-align:center; padding:20px; font-size:3rem; color:var(--primary);"><i class="fas fa-check-circle"></i></div>`;
-                }
-
-                container.innerHTML += `
-                <div class="card reveal">
-                    ${imgHTML}
-                    <div class="card-body">
-                        <h3>${item.title}</h3>
-                        <p>${item.desc}</p>
-                    </div>
-                </div>`;
-            });
-        }
-
-        // --- ADMIN LOGIC ---
-        function toggleLoginModal() {
-            const el = document.getElementById('login-modal');
-            el.style.display = (el.style.display === 'flex') ? 'none' : 'flex';
-        }
-
-        function login() {
-            const u = document.getElementById('username').value;
-            const p = document.getElementById('password').value;
-            if (u === 'admin' && p === 'abobob123') {
-                toggleLoginModal();
-                openAdminPanel();
+        // --- VISITOR TRACKING (SIMULATION) ---
+        function trackVisits() {
+            const today = new Date().toLocaleDateString();
+            if (db.visits.lastDate !== today) {
+                db.visits.daily = 1; // Reset daily
+                db.visits.lastDate = today;
             } else {
-                alert('بيانات خاطئة');
+                db.visits.daily++;
+            }
+            db.visits.monthly++;
+            saveDB();
+        }
+
+        // --- CORE FUNCTIONS ---
+        function saveDB() {
+            try {
+                localStorage.setItem('afmap_v2', JSON.stringify(db));
+            } catch (e) {
+                alert("تنبيه: مساحة التخزين ممتلئة. حاول استخدام صور أصغر حجماً.");
             }
         }
 
-        function openAdminPanel() {
-            document.getElementById('admin-panel').style.display = 'flex';
-            loadAdminData();
+        function toggleMenu() {
+            const menu = document.getElementById('side-menu');
+            const overlay = document.getElementById('overlay');
+            if (menu.classList.contains('active')) {
+                menu.classList.remove('active');
+                overlay.style.display = 'none';
+            } else {
+                menu.classList.add('active');
+                overlay.style.display = 'block';
+            }
         }
 
-        function closeAdminPanel() {
-            document.getElementById('admin-panel').style.display = 'none';
+        // --- RENDERING ---
+        function renderSite() {
+            // Settings
+            if (db.settings.logo) {
+                document.getElementById('logo-display').innerHTML = `<img src="${db.settings.logo}" alt="Logo">`;
+            }
+            document.getElementById('flair-text').innerText = db.settings.flair;
+            document.getElementById('hero').style.backgroundImage = `url('${db.settings.heroImg}')`;
+            document.getElementById('hero-title').innerText = db.settings.heroTitle;
+            document.getElementById('hero-event').innerText = db.settings.heroEvent;
+            
+            // Stats
+            const stats = db.settings.stats;
+            document.getElementById('stats-display').innerHTML = `
+                <div><span class="stat-num">${stats.s1.split(' ')[0]}</span>${stats.s1.split(' ').slice(1).join(' ')}</div>
+                <div><span class="stat-num">${stats.s2.split(' ')[0]}</span>${stats.s2.split(' ').slice(1).join(' ')}</div>
+                <div><span class="stat-num">${stats.s3.split(' ')[0]}</span>${stats.s3.split(' ').slice(1).join(' ')}</div>
+            `;
+
+            // Grids
+            renderGrid('services', db.services);
+            renderGrid('products', db.products);
+            renderBlogGrid();
+            renderFounders();
         }
 
-        function logout() {
-            closeAdminPanel();
-            alert("تم تسجيل الخروج");
-        }
-
-        function switchTab(tabId) {
-            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-            document.querySelectorAll('.sidebar button').forEach(b => b.classList.remove('active'));
-            document.getElementById(tabId).classList.add('active');
-            event.target.classList.add('active');
-        }
-
-        // --- ADMIN DATA LOADING & SAVING ---
-        function loadAdminData() {
-            // Load Hero Inputs
-            document.getElementById('edit-hero-img').value = data.hero.img;
-            document.getElementById('edit-hero-event').value = data.hero.event;
-            document.getElementById('edit-hero-title').value = data.hero.title;
-
-            // Load Stats Inputs
-            document.getElementById('stat-plants').value = data.stats.plants;
-            document.getElementById('stat-researchers').value = data.stats.researchers;
-            document.getElementById('stat-studies').value = data.stats.studies;
-
-            // Load Lists
-            loadAdminList('admin-products-list', data.products, 'products');
-            loadAdminList('admin-services-list', data.services, 'services');
-            loadAdminList('admin-events-list', data.events, 'events');
-            loadAdminList('admin-blog-list', data.blog, 'blog');
-            loadAdminList('admin-founders-list', data.founders, 'founders');
-        }
-
-        function loadAdminList(elId, arrayData, type) {
-            const container = document.getElementById(elId);
+        function renderGrid(type, data) {
+            const container = document.getElementById(`${type}-grid`);
             container.innerHTML = '';
-            arrayData.forEach((item, index) => {
-                let name = item.title || item.name; // Founders have 'name', others 'title'
+            data.forEach(item => {
+                let metaHTML = '';
+                if(item.link || item.info) {
+                    metaHTML = `<div class="card-meta">
+                        ${item.link ? `<a href="${item.link}" target="_blank" class="meta-btn"><i class="fas fa-link"></i> رابط</a>` : ''}
+                        ${item.info ? `<span class="meta-btn" onclick="alert('${item.info}')"><i class="fas fa-info-circle"></i> معلومات</span>` : ''}
+                    </div>`;
+                }
+
                 container.innerHTML += `
-                    <div class="item-row">
-                        <span>${name}</span>
-                        <button class="btn-delete" onclick="deleteItem('${type}', ${index})"><i class="fas fa-trash"></i> حذف</button>
+                    <div class="card fade-in">
+                        <img src="${item.img || 'https://via.placeholder.com/300'}" class="card-img">
+                        <div class="card-body">
+                            <h3>${item.title}</h3>
+                            <p style="font-size:0.9rem; color:#666;">${item.desc}</p>
+                            ${metaHTML}
+                        </div>
                     </div>
                 `;
             });
         }
 
-        // --- SAVE ACTIONS ---
-        function saveHero() {
-            data.hero.img = document.getElementById('edit-hero-img').value;
-            data.hero.event = document.getElementById('edit-hero-event').value;
-            data.hero.title = document.getElementById('edit-hero-title').value;
-            saveAndRefresh();
+        function renderBlogGrid() {
+            const container = document.getElementById('blog-grid');
+            container.innerHTML = '';
+            db.blog.forEach((post, index) => {
+                container.innerHTML += `
+                    <div class="card fade-in">
+                        <img src="${post.img || 'https://via.placeholder.com/300'}" class="card-img">
+                        <div class="card-body">
+                            <h3>${post.title}</h3>
+                            <p style="font-size:0.9rem; color:#666;">${post.desc.substring(0, 60)}...</p>
+                            <span class="blog-btn" onclick="openReader(${index})">اقرأ المزيد</span>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+        
+        function renderFounders() {
+            const container = document.getElementById('founders-grid');
+            container.innerHTML = '';
+            db.founders.forEach(f => {
+                container.innerHTML += `
+                    <div class="card fade-in" style="text-align:center;">
+                        <img src="${f.img || 'https://via.placeholder.com/150'}" style="width:120px; height:120px; border-radius:50%; margin-top:20px; object-fit:cover;">
+                        <div class="card-body">
+                            <h3>${f.name}</h3>
+                            <p style="color:var(--primary); font-weight:bold;">${f.role}</p>
+                        </div>
+                    </div>
+                `;
+            });
         }
 
-        function saveStats() {
-            data.stats.plants = document.getElementById('stat-plants').value;
-            data.stats.researchers = document.getElementById('stat-researchers').value;
-            data.stats.studies = document.getElementById('stat-studies').value;
-            saveAndRefresh();
+        // --- BLOG READER ---
+        function openReader(index) {
+            const post = db.blog[index];
+            document.getElementById('reader-img').src = post.img;
+            document.getElementById('reader-title').innerText = post.title;
+            document.getElementById('reader-content').innerText = post.content || post.desc; // Fallback to short desc if no content
+            document.getElementById('blog-modal').style.display = 'flex';
         }
 
-        // --- ADD/DELETE ITEMS ---
-        function addItem(type) {
-            let newItem = {};
-            if(type === 'products' || type === 'events' || type === 'blog') {
-                let prefix = (type === 'products') ? 'new-prod' : (type === 'events' ? 'new-event' : 'new-blog');
-                newItem = {
-                    id: Date.now(),
-                    title: document.getElementById(`${prefix}-name`).value,
-                    img: document.getElementById(`${prefix}-img`).value,
-                    desc: document.getElementById(`${prefix}-desc`).value
-                };
-                // Clear inputs
-                document.getElementById(`${prefix}-name`).value = '';
-                document.getElementById(`${prefix}-img`).value = '';
-                document.getElementById(`${prefix}-desc`).value = '';
-            } else if (type === 'services') {
-                newItem = {
-                    id: Date.now(),
-                    title: document.getElementById('new-serv-name').value,
-                    desc: document.getElementById('new-serv-desc').value
-                };
-                document.getElementById('new-serv-name').value = '';
-                document.getElementById('new-serv-desc').value = '';
+        // --- ADMIN AUTH ---
+        function openLoginModal() { 
+            toggleMenu(); // Close sidebar
+            document.getElementById('login-modal').style.display = 'flex'; 
+        }
+        function closeLogin() { document.getElementById('login-modal').style.display = 'none'; }
+        
+        function checkLogin() {
+            if(document.getElementById('admin-user').value === 'admin' && 
+               document.getElementById('admin-pass').value === 'abobob123') {
+                closeLogin();
+                openDashboard();
+            } else { alert('بيانات خاطئة'); }
+        }
+
+        function logout() {
+            document.getElementById('admin-dashboard').style.display = 'none';
+        }
+
+        // --- ADMIN DASHBOARD ---
+        function openDashboard() {
+            document.getElementById('admin-dashboard').style.display = 'flex';
+            document.getElementById('daily-visits').innerText = db.visits.daily;
+            document.getElementById('monthly-visits').innerText = db.visits.monthly;
+            showTab('settings');
+        }
+
+        function showTab(tabName) {
+            // Update active button state
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            event.target.classList.add('active');
+
+            const area = document.getElementById('admin-content-area');
+            area.innerHTML = ''; // Clear previous content
+
+            if(tabName === 'settings') {
+                area.innerHTML = `
+                    <h3>الإعدادات العامة</h3>
+                    <div class="form-group"><label>تغيير اللوجو</label><input type="file" id="up-logo" accept="image/*" onchange="uploadImage(this, (url)=>{ db.settings.logo = url; saveDB(); renderSite(); })"></div>
+                    <div class="form-group"><label>الشريط الإخباري (Flair)</label><input type="text" value="${db.settings.flair}" onchange="db.settings.flair=this.value; saveDB();"></div>
+                    <div class="form-group"><label>صورة الخلفية (URL أو رفع)</label><input type="text" value="${db.settings.heroImg}" onchange="db.settings.heroImg=this.value; saveDB();"><input type="file" onchange="uploadImage(this, (url)=>{ db.settings.heroImg = url; saveDB(); renderSite(); })"></div>
+                    <div class="form-group"><label>العنوان الرئيسي</label><input type="text" value="${db.settings.heroTitle}" onchange="db.settings.heroTitle=this.value; saveDB();"></div>
+                    <div class="form-group"><label>نص الحدث (Event)</label><input type="text" value="${db.settings.heroEvent}" onchange="db.settings.heroEvent=this.value; saveDB();"></div>
+                    <div class="form-group"><label>إحصائيات الشريط (مثال: +700 نبات)</label>
+                        <input type="text" value="${db.settings.stats.s1}" onchange="db.settings.stats.s1=this.value; saveDB();">
+                        <input type="text" value="${db.settings.stats.s2}" style="margin-top:5px;" onchange="db.settings.stats.s2=this.value; saveDB();">
+                        <input type="text" value="${db.settings.stats.s3}" style="margin-top:5px;" onchange="db.settings.stats.s3=this.value; saveDB();">
+                    </div>
+                `;
+            } 
+            else if (tabName === 'tab-blog') {
+                renderAdminList('blog', area, true);
             }
-
-            if(newItem.title) {
-                data[type].push(newItem);
-                loadAdminList(`admin-${type}-list`, data[type], type);
-                saveAndRefresh();
+            else if (tabName === 'tab-founders') {
+                renderAdminList('founders', area, false);
+            }
+            else {
+                // Products or Services
+                let type = tabName.replace('tab-', '');
+                renderAdminList(type, area, false);
             }
         }
 
-        function addFounder() {
-            const name = document.getElementById('new-founder-name').value;
-            const role = document.getElementById('new-founder-role').value;
-            const img = document.getElementById('new-founder-img').value;
+        // Generic Admin List Render
+        function renderAdminList(type, container, isBlog) {
+            container.innerHTML = `<h3>إدارة ${type}</h3>`;
+            
+            // Add New Form
+            let formHtml = `<div style="background:#f4f4f4; padding:15px; border-radius:8px; margin-bottom:20px;">
+                <h4>إضافة جديد</h4>
+                <div class="form-group"><input type="text" id="new-title" placeholder="العنوان / الاسم"></div>
+                ${isBlog ? `<div class="form-group"><textarea id="new-content" rows="5" placeholder="محتوى المقال كاملاً"></textarea></div>` : ''}
+                <div class="form-group"><input type="text" id="new-desc" placeholder="${isBlog ? 'مقتطف قصير' : 'الوصف / الوظيفة'}"></div>
+                <div class="form-group"><label>صورة</label><input type="file" id="new-img-file" accept="image/*"></div>
+                ${!isBlog && type !== 'founders' ? `
+                <div class="form-group"><input type="text" id="new-link" placeholder="رابط تحويل (اختياري)"></div>
+                <div class="form-group"><input type="text" id="new-info" placeholder="معلومات (هاتف/ايميل) (اختياري)"></div>` : ''}
+                <button class="btn btn-primary" onclick="handleAddItem('${type}')">إضافة</button>
+            </div>`;
+            
+            container.innerHTML += formHtml;
 
-            if(name && role) {
-                data.founders.push({ id: Date.now(), name, role, img: img || 'https://via.placeholder.com/150' });
-                document.getElementById('new-founder-name').value = '';
-                document.getElementById('new-founder-role').value = '';
-                document.getElementById('new-founder-img').value = '';
+            // List Existing
+            let listHtml = '';
+            db[type].forEach((item, idx) => {
+                listHtml += `<div style="display:flex; justify-content:space-between; background:white; padding:10px; border-bottom:1px solid #eee; align-items:center;">
+                    <span>${item.title || item.name}</span>
+                    <button class="btn btn-danger" onclick="deleteItem('${type}', ${idx}); showTab('tab-${type}')">حذف</button>
+                </div>`;
+            });
+            container.innerHTML += listHtml;
+        }
+
+        // --- ADD / DELETE LOGIC ---
+        function handleAddItem(type) {
+            const title = document.getElementById('new-title').value;
+            const desc = document.getElementById('new-desc').value;
+            const fileInput = document.getElementById('new-img-file');
+            
+            if(!title) return alert("العنوان مطلوب");
+
+            // Helper to save item
+            const saveItem = (imgUrl) => {
+                let newItem = { title: title, desc: desc, img: imgUrl };
+                if (type === 'founders') { newItem = { name: title, role: desc, img: imgUrl }; }
+                if (type === 'blog') { newItem.content = document.getElementById('new-content').value; }
+                if (type !== 'blog' && type !== 'founders') {
+                    newItem.link = document.getElementById('new-link').value;
+                    newItem.info = document.getElementById('new-info').value;
+                }
                 
-                loadAdminList('admin-founders-list', data.founders, 'founders');
-                saveAndRefresh();
+                db[type].push(newItem);
+                saveDB();
+                renderSite();
+                showTab('tab-' + type); // Refresh tab
+            };
+
+            // Check if image uploaded
+            if (fileInput.files && fileInput.files[0]) {
+                uploadImage(fileInput, (url) => saveItem(url));
+            } else {
+                saveItem(''); // Save without image
             }
         }
 
         function deleteItem(type, index) {
-            if(confirm('هل أنت متأكد من الحذف؟')) {
-                data[type].splice(index, 1);
-                loadAdminList(`admin-${type}-list`, data[type], type);
-                saveAndRefresh();
+            if(confirm("حذف العنصر؟")) {
+                db[type].splice(index, 1);
+                saveDB();
+                renderSite();
             }
         }
 
-        function saveAndRefresh() {
-            localStorage.setItem('afmapDB', JSON.stringify(data));
-            renderAll();
-        }
-
-        // --- SCROLL ANIMATION ---
-        function checkScroll() {
-            const reveals = document.querySelectorAll('.reveal');
-            reveals.forEach(reveal => {
-                const windowHeight = window.innerHeight;
-                const elementTop = reveal.getBoundingClientRect().top;
-                const elementVisible = 100;
-                if (elementTop < windowHeight - elementVisible) {
-                    reveal.classList.add('active');
+        // --- IMAGE HANDLING (BASE64) ---
+        function uploadImage(input, callback) {
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+                reader.onload = function(e) {
+                    // e.target.result contains the Base64 data
+                    callback(e.target.result);
                 }
-            });
+                reader.readAsDataURL(input.files[0]);
+            }
         }
-        window.addEventListener('scroll', checkScroll);
 
         // --- INIT ---
         window.onload = function() {
-            renderAll();
-            checkScroll(); // Trigger animations for header items
+            trackVisits();
+            renderSite();
         }
 
     </script>
