@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AFMAP - المؤسسة الجزائرية للنباتات الطبية والعطرية</title>
+    <!-- خط عربي جميل (Cairo) -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- أيقونات FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --primary-color: #2ecc71; /* اللون الأخضر الأساسي */
+            --dark-green: #27ae60;
+            --text-color: #333;
+            --bg-light: #f9f9f9;
+            --white: #ffffff;
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Cairo', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-light);
+            color: var(--text-color);
+            overflow-x: hidden;
+        }
+
+        /* --- Animations --- */
+        .fade-in-up {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+        }
+        .fade-in-up.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* --- Header --- */
+        header {
+            background-color: var(--primary-color);
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: white;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
+        .menu-btn {
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        .admin-login-btn {
+            font-size: 0.9rem;
+            background: rgba(255,255,255,0.2);
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            border: none;
+            color: white;
+        }
+
+        /* --- Hero Slider --- */
+        .hero {
+            position: relative;
+            height: 60vh;
+            overflow: hidden;
+            background: #000;
+        }
+
+        .slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            transition: opacity 1s ease;
+            background-size: cover;
+            background-position: center;
+        }
+
+        .slide.active {
+            opacity: 0.6; /* Darken for text readability */
+        }
+
+        .hero-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            color: white;
+            z-index: 2;
+            width: 90%;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.7);
+        }
+
+        .hero-content h2 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        .hero-content p {
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        /* --- Stats Bar --- */
+        .stats-bar {
+            background-color: var(--primary-color);
+            padding: 20px 0;
+            display: flex;
+            justify-content: space-around;
+            color: white;
+            flex-wrap: wrap;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 10px;
+        }
+
+        .stat-icon {
+            font-size: 2rem;
+            margin-bottom: 5px;
+        }
+
+        .stat-number {
+            font-weight: bold;
+            font-size: 1.2rem;
+            direction: ltr; /* To make +700 look right */
+        }
+
+        /* --- Categories --- */
+        .categories {
+            padding: 40px 20px;
+            text-align: center;
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+
+        .cat-card {
+            position: relative;
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 4px solid var(--primary-color);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .cat-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .cat-title {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-weight: 900;
+            font-size: 1.1rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.8), -1px -1px 0 #000;
+            width: 100%;
+        }
+
+        /* --- Catalog Button --- */
+        .catalog-section {
+            text-align: center;
+            padding: 20px;
+        }
+
+        .catalog-btn {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 15px 40px;
+            border-radius: 50px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 4px 10px rgba(46, 204, 113, 0.4);
+            transition: var(--transition);
+        }
+
+        .catalog-btn:hover {
+            background-color: var(--dark-green);
+            transform: translateY(-3px);
+        }
+
+        /* --- Products Preview --- */
+        .products-section {
+            padding: 40px 20px;
+        }
+        
+        .section-title {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+            font-weight: 700;
+        }
+
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+        }
+
+        .product-card {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .product-card img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .product-card h3 {
+            padding: 10px;
+            text-align: center;
+            font-size: 1rem;
+            color: var(--dark-green);
+        }
+
+        /* --- Event Gallery --- */
+        .gallery-section {
+            padding: 20px;
+        }
+        .gallery-img {
+            width: 100%;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        .gallery-caption {
+            text-align: center;
+            margin-top: 10px;
+            font-weight: bold;
+        }
+
+        /* --- Founders --- */
+        .founders-section {
+            padding: 50px 20px;
+            background: white;
+        }
+
+        .founders-grid {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 40px;
+        }
+
+        .founder-card {
+            text-align: center;
+            width: 200px;
+        }
+
+        .founder-img {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            border: 5px solid var(--primary-color);
+            object-fit: cover;
+            margin-bottom: 15px;
+            transition: var(--transition);
+        }
+        .founder-card:hover .founder-img {
+            transform: scale(1.05);
+        }
+
+        .founder-name {
+            background-color: var(--dark-green);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            display: inline-block;
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+        }
+
+        .founder-role {
+            font-size: 0.8rem;
+            color: #666;
+        }
+
+        /* --- Contact / Footer --- */
+        .contact-section {
+            padding: 40px 20px;
+            background-color: #fff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            border-top: 2px solid var(--primary-color);
+        }
+
+        .contact-logo img {
+            width: 150px;
+            margin-bottom: 20px;
+        }
+
+        .contact-info div {
+            margin: 10px 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .contact-icon {
+            color: var(--primary-color);
+        }
+
+        /* --- Admin Panel Styling --- */
+        #login-modal, #admin-dashboard {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+            overflow-y: auto;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+        }
+        
+        .dashboard-content {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            width: 95%;
+            max-width: 800px;
+            margin: 20px auto;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+            text-align: right;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .form-group input, .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .btn-primary { background: var(--primary-color); color: white; }
+        .btn-danger { background: #e74c3c; color: white; }
+        .btn-secondary { background: #95a5a6; color: white; }
+
+        .dashboard-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            padding: 8px 15px;
+            background: #eee;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        .tab-btn.active { background: var(--primary-color); color: white; }
+
+        .dashboard-section { display: none; }
+        .dashboard-section.active { display: block; }
+        
+        .item-list { border: 1px solid #ddd; padding: 10px; margin-bottom: 10px; border-radius: 5px; position: relative;}
+        .delete-btn { position: absolute; left: 10px; top: 10px; background: red; color: white; border: none; padding: 2px 5px; cursor: pointer;}
+
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <header>
+        <div class="menu-btn"><i class="fas fa-bars"></i></div>
+        <div class="logo">AFMAP</div>
+        <button class="admin-login-btn" onclick="openLogin()">Admin</button>
+    </header>
+
+    <!-- Hero Slider -->
+    <section class="hero" id="hero-slider">
+        <!-- Sliders injected by JS -->
+    </section>
+
+    <!-- Stats -->
+    <section class="stats-bar" id="stats-container">
+        <!-- Stats injected by JS -->
+    </section>
+
+    <!-- Categories -->
+    <section class="categories fade-in-up">
+        <div class="cat-card">
+            <img src="https://images.unsplash.com/photo-1515688594390-b649af70d282?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60" alt="نباتات">
+            <div class="cat-title">نباتات<br>عطرية</div>
+        </div>
+        <div class="cat-card">
+            <img src="https://images.unsplash.com/photo-1466692476868-aef1dfb1e735?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60" alt="فصائل">
+            <div class="cat-title">فصائل<br>ناجحة</div>
+        </div>
+    </section>
+
+    <!-- Catalog -->
+    <section class="catalog-section fade-in-up">
+        <a href="#" class="catalog-btn">
+            <i class="fas fa-folder-open"></i>
+            <span>كاثالوغ الخاص بنا</span>
+        </a>
+    </section>
+
+    <!-- Founders -->
+    <section class="founders-section">
+        <h2 class="section-title">المؤسسين</h2>
+        <div class="founders-grid" id="founders-container">
+            <!-- Founders injected by JS -->
+        </div>
+    </section>
+
+    <!-- Products Preview -->
+    <section class="products-section fade-in-up">
+        <h2 class="section-title">منتجاتنا</h2>
+        <div class="products-grid">
+            <div class="product-card">
+                <img src="https://images.unsplash.com/photo-1608571423902-eed4a5e84e8c?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60" alt="Product">
+                <h3>زيوت أساسية</h3>
+            </div>
+            <div class="product-card">
+                <img src="https://images.unsplash.com/photo-1628102491629-778571d893a3?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60" alt="Product">
+                <h3>أعشاب مجففة</h3>
+            </div>
+            <div class="product-card">
+                <img src="https://images.unsplash.com/photo-1596526131083-e8c633c948d2?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60" alt="Product">
+                <h3>شتلات</h3>
+            </div>
+        </div>
+    </section>
+
+    <!-- Gallery / Event -->
+    <section class="gallery-section fade-in-up">
+        <img src="https://images.unsplash.com/photo-1544531696-9348411883ce?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60" class="gallery-img" alt="Event">
+        <p class="gallery-caption">عرض مشروع AFMAP بحضور مختصين وضيوف</p>
+    </section>
+
+    <!-- Contact Info -->
+    <section class="contact-section" id="contact-info">
+        <!-- Contact injected by JS -->
+    </section>
+
+    <!-- ================= ADMIN LOGIN MODAL ================= -->
+    <div id="login-modal">
+        <div class="modal-content">
+            <h3>تسجيل دخول المدير</h3>
+            <div class="form-group">
+                <input type="text" id="admin-user" placeholder="اسم المستخدم">
+            </div>
+            <div class="form-group">
+                <input type="password" id="admin-pass" placeholder="كلمة المرور">
+            </div>
+            <p id="login-error" style="color: red; font-size: 0.8rem; display:none;">بيانات خاطئة</p>
+            <button class="btn btn-primary" onclick="checkLogin()">دخول</button>
+            <button class="btn btn-secondary" onclick="closeLogin()">إلغاء</button>
+        </div>
+    </div>
+
+    <!-- ================= ADMIN DASHBOARD ================= -->
+    <div id="admin-dashboard">
+        <div class="dashboard-content">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h2>لوحة التحكم</h2>
+                <button class="btn btn-danger" onclick="logout()">خروج</button>
+            </div>
+
+            <div class="dashboard-tabs">
+                <button class="tab-btn active" onclick="showTab('tab-hero')">السلايدر</button>
+                <button class="tab-btn" onclick="showTab('tab-stats')">الإحصائيات</button>
+                <button class="tab-btn" onclick="showTab('tab-founders')">المؤسسين</button>
+                <button class="tab-btn" onclick="showTab('tab-contact')">معلومات الاتصال</button>
+            </div>
+
+            <!-- Tab: Hero -->
+            <div id="tab-hero" class="dashboard-section active">
+                <h3>تعديل السلايدر (الصورة الرئيسية)</h3>
+                <div class="form-group">
+                    <label>عنوان الحدث</label>
+                    <input type="text" id="edit-hero-title">
+                </div>
+                <div class="form-group">
+                    <label>رابط صورة الخلفية (URL)</label>
+                    <input type="text" id="edit-hero-img">
+                </div>
+                <button class="btn btn-primary" onclick="saveData()">حفظ التغييرات</button>
+            </div>
+
+            <!-- Tab: Stats -->
+            <div id="tab-stats" class="dashboard-section">
+                <h3>تعديل الإحصائيات</h3>
+                <div id="edit-stats-list"></div>
+                <!-- Dynamic inputs will be here -->
+                <button class="btn btn-primary" onclick="saveData()">حفظ التغييرات</button>
+            </div>
+
+            <!-- Tab: Founders -->
+            <div id="tab-founders" class="dashboard-section">
+                <h3>تعديل المؤسسين</h3>
+                <div id="edit-founders-list"></div>
+                <button class="btn btn-secondary" onclick="addFounder()">+ إضافة مؤسس</button>
+                <button class="btn btn-primary" onclick="saveData()">حفظ التغييرات</button>
+            </div>
+
+            <!-- Tab: Contact -->
+            <div id="tab-contact" class="dashboard-section">
+                <h3>معلومات الاتصال</h3>
+                <div class="form-group">
+                    <label>رقم الهاتف</label>
+                    <input type="text" id="edit-phone">
+                </div>
+                <div class="form-group">
+                    <label>البريد الإلكتروني</label>
+                    <input type="text" id="edit-email">
+                </div>
+                <div class="form-group">
+                    <label>الموقع</label>
+                    <input type="text" id="edit-location">
+                </div>
+                <button class="btn btn-primary" onclick="saveData()">حفظ التغييرات</button>
+            </div>
+
+            <div style="margin-top: 20px; text-align: left;">
+                <button class="btn btn-secondary" onclick="closeDashboard()">إغلاق اللوحة</button>
+                <button class="btn btn-danger" onclick="resetToDefault()">استعادة الافتراضي</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT -->
+    <script>
+        // --- DATA MANAGEMENT ---
+        const defaultData = {
+            hero: {
+                title: "NEXT EVENT 17 FEV 2026 JARDY , BAB EZZOUAR",
+                image: "https://images.unsplash.com/photo-1531973576160-7125cd663d86?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80"
+            },
+            stats: [
+                { id: 1, num: "+700", text: "نباتات", icon: "fa-leaf" },
+                { id: 2, num: "+166", text: "باحث", icon: "fa-microscope" },
+                { id: 3, num: "+263", text: "دراسات", icon: "fa-file-alt" }
+            ],
+            founders: [
+                { id: 1, name: "مصطفى رحمون", title: "مدير مؤسسة afmp", img: "https://randomuser.me/api/portraits/men/32.jpg" },
+                { id: 2, name: "محمد خليل", title: "نائب رئيس المجلس العلمي", img: "https://randomuser.me/api/portraits/men/45.jpg" },
+                { id: 3, name: "سمير مسدور", title: "عضو مؤسس", img: "https://randomuser.me/api/portraits/men/22.jpg" }
+            ],
+            contact: {
+                phone: "0540043640",
+                email: "info@afmap-dz.com",
+                website: "www.afmap-dz.com",
+                location: "Rouiba, Alger"
+            }
+        };
+
+        let siteData = {};
+
+        // Load data on start
+        function loadData() {
+            const stored = localStorage.getItem('afmapData');
+            if (stored) {
+                siteData = JSON.parse(stored);
+            } else {
+                siteData = JSON.parse(JSON.stringify(defaultData));
+            }
+            renderSite();
+        }
+
+        // --- RENDERING FUNCTIONS ---
+        function renderSite() {
+            // Render Hero
+            const heroHTML = `
+                <div class="slide active" style="background-image: url('${siteData.hero.image}')"></div>
+                <div class="hero-content">
+                    <h2>${siteData.h
