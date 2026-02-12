@@ -1,9 +1,11 @@
-<!DOCTYPE html>
+</html><!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AFMAP - المؤسسة الجزائرية للنباتات الطبية</title>
+    
+    <!-- الخطوط والأيقونات -->
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
@@ -15,572 +17,657 @@
             --dark: #1b5e20;
             --bg: #f8fcf8;
             --sidebar-width: 280px;
+            --dashboard-bg: #f4f7fa;
+            --glass: rgba(255, 255, 255, 0.95);
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Cairo', sans-serif; outline: none; }
-        body { background-color: var(--bg); overflow-x: hidden; scroll-behavior: smooth; }
+        body { background-color: var(--bg); overflow-x: hidden; scroll-behavior: smooth; transition: 0.3s; }
         
         /* --- Animations --- */
         .fade-in { animation: fadeIn 0.8s ease-in-out; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
+        /* --- Glowing Event Animation --- */
+        @keyframes glowing {
+            0% { box-shadow: 0 0 5px var(--accent); }
+            50% { box-shadow: 0 0 20px var(--accent), 0 0 10px #ffd54f; }
+            100% { box-shadow: 0 0 5px var(--accent); }
+        }
+        .event-glow {
+            animation: glowing 2s infinite;
+            border: 2px solid var(--accent) !important;
+            background: rgba(0,0,0,0.6);
+            cursor: pointer;
+        }
+
+        /* --- Language Toggle --- */
+        .lang-btn {
+            position: fixed; bottom: 20px; left: 20px; z-index: 1005;
+            background: var(--dark); color: white; padding: 10px 15px;
+            border-radius: 50px; cursor: pointer; border: 2px solid white;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3); font-weight: bold; transition: 0.3s;
+        }
+        .lang-btn:hover { transform: scale(1.1); }
+
         /* --- Header --- */
         header {
-            background: rgba(255,255,255,0.95); padding: 10px 20px; position: sticky; top: 0; z-index: 1000;
+            background: var(--glass); padding: 10px 20px; position: sticky; top: 0; z-index: 1000;
             display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            backdrop-filter: blur(10px);
         }
+        .logo-container { display: flex; align-items: center; gap: 10px; }
         .logo-container img { height: 50px; }
         .menu-btn { font-size: 1.5rem; color: var(--primary); cursor: pointer; border: none; background: none; }
 
         /* --- Sidebar --- */
         .sidebar-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1001; display: none; }
         .side-menu {
-            position: fixed; top: 0; right: -300px; width: var(--sidebar-width); height: 100%;
-            background: white; z-index: 1002; transition: 0.3s; padding: 20px;
-            display: flex; flex-direction: column; box-shadow: -5px 0 15px rgba(0,0,0,0.1);
+            position: fixed; top: 0; width: var(--sidebar-width); height: 100%;
+            background: white; z-index: 1002; transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1); padding: 20px;
+            display: flex; flex-direction: column; box-shadow: 0 0 20px rgba(0,0,0,0.2);
         }
-        .side-menu.active { right: 0; }
-        .close-menu { align-self: flex-end; font-size: 1.5rem; cursor: pointer; margin-bottom: 20px; }
+        /* RTL support for sidebar */
+        html[dir="rtl"] .side-menu { right: -300px; border-left: 5px solid var(--primary); }
+        html[dir="rtl"] .side-menu.active { right: 0; }
+        html[dir="ltr"] .side-menu { left: -300px; border-right: 5px solid var(--primary); }
+        html[dir="ltr"] .side-menu.active { left: 0; }
+
         .side-link {
             padding: 15px; border-bottom: 1px solid #eee; text-decoration: none;
             color: #333; font-weight: bold; display: flex; align-items: center; gap: 10px; transition: 0.3s;
         }
-        .side-link:hover { background: var(--bg); color: var(--primary); padding-right: 20px; }
-        .admin-login-link { margin-top: auto; background: var(--dark); color: white; border-radius: 8px; justify-content: center; }
+        .side-link:hover { background: #e8f5e9; color: var(--primary); padding-inline-start: 20px; }
 
         /* --- Hero Section --- */
         .hero {
-            height: 80vh; position: relative; display: flex; align-items: center; justify-content: center;
+            height: 85vh; position: relative; display: flex; align-items: center; justify-content: center;
             text-align: center; color: white; background-size: cover; background-position: center;
-            transition: background-image 1s ease-in-out; /* Smooth transition for slider */
+            transition: background-image 1s ease-in-out;
         }
         .hero::before { content: ''; position: absolute; inset: 0; background: rgba(0,0,0,0.5); }
-        .hero-content { position: relative; z-index: 2; padding: 20px; width: 100%; }
-        .hero h1 { font-size: 2.5rem; margin-bottom: 15px; text-shadow: 0 2px 10px rgba(0,0,0,0.5); }
+        .hero-content { position: relative; z-index: 2; padding: 20px; width: 100%; max-width: 800px; }
+        .hero h1 { font-size: 3rem; margin-bottom: 15px; text-shadow: 0 4px 15px rgba(0,0,0,0.7); }
         
-        .event-wrapper { margin-bottom: 20px; display: inline-flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 10px; }
-        .event-badge { background: var(--accent); color: #000; padding: 8px 20px; border-radius: 50px; font-weight: bold; font-size: 0.9rem; }
-        .event-btn { background: white; color: var(--primary); padding: 8px 20px; border-radius: 50px; text-decoration: none; font-weight: bold; font-size: 0.9rem; transition: 0.3s; }
-        .event-btn:hover { background: var(--primary); color: white; }
-
+        .event-wrapper { margin-bottom: 25px; display: inline-flex; flex-wrap: wrap; justify-content: center; gap: 15px; align-items: center; }
+        .event-badge { 
+            color: white; padding: 10px 25px; border-radius: 50px; 
+            font-weight: 900; letter-spacing: 1px; font-size: 1rem;
+        }
+        
         /* --- Stats Bar --- */
         .stats-bar { 
-            background: var(--primary); padding: 30px 5%; color: white; 
-            display: flex; flex-wrap: wrap; justify-content: space-around; text-align: center; gap: 20px;
+            background: var(--primary); padding: 40px 5%; color: white; margin-top: -50px; position: relative; z-index: 10;
+            border-radius: 30px 30px 0 0; display: flex; flex-wrap: wrap; justify-content: space-around; gap: 30px;
+            box-shadow: 0 -5px 20px rgba(0,0,0,0.1);
         }
-        .stat-item i { font-size: 2rem; margin-bottom: 10px; color: var(--accent); }
-        .stat-num { font-size: 1.8rem; font-weight: bold; display: block; }
-        .stat-text { font-size: 1rem; opacity: 0.9; }
+        .stat-item { text-align: center; min-width: 120px; }
+        .stat-item i { font-size: 2.5rem; margin-bottom: 10px; color: var(--accent); }
+        .stat-num { font-size: 2rem; font-weight: 900; display: block; }
 
-        /* --- General Layout --- */
-        .section-container { padding: 50px 5%; }
-        .section-title { text-align: center; margin-bottom: 40px; color: var(--dark); font-size: 2rem; position: relative; }
-        .section-title::after { content: ''; display: block; width: 60px; height: 3px; background: var(--primary); margin: 10px auto; }
+        /* --- Grid Layouts --- */
+        .section-container { padding: 60px 5%; }
+        .section-title { text-align: center; margin-bottom: 50px; color: var(--dark); font-size: 2.2rem; position: relative; }
+        .section-title::after { content: ''; display: block; width: 80px; height: 4px; background: var(--accent); margin: 15px auto; border-radius: 2px; }
         
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
-        
-        /* --- Founders Specific Layout (2 per row) --- */
-        .founders-grid { 
-            display: grid; 
-            grid-template-columns: repeat(2, 1fr); /* Force 2 columns */
-            gap: 20px; 
-        }
-        @media (max-width: 400px) {
-            .founders-grid { grid-template-columns: 1fr; } /* On very small screens 1 column */
-        }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 25px; }
+        .founders-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 25px; }
+        @media (max-width: 500px) { .founders-grid { grid-template-columns: 1fr; } }
 
         /* --- Cards --- */
-        .card { background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.05); transition: 0.3s; }
-        .card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
-        .card-img { width: 100%; height: 180px; object-fit: cover; }
-        .card-body { padding: 15px; }
-        .card h3 { color: var(--primary); font-size: 1.1rem; margin-bottom: 5px; }
-        .card-meta { margin-top: 10px; padding-top: 10px; border-top: 1px solid #eee; font-size: 0.85rem; color: #555; }
-        .card-meta div { margin-top: 5px; display: flex; align-items: center; gap: 5px; }
+        .card { background: white; border-radius: 15px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.05); transition: 0.4s; height: 100%; display: flex; flex-direction: column; }
+        .card:hover { transform: translateY(-8px); box-shadow: 0 15px 30px rgba(0,0,0,0.15); }
+        .card-img { width: 100%; height: 200px; object-fit: cover; }
+        .card-body { padding: 20px; flex: 1; display: flex; flex-direction: column; }
+        .card h3 { color: var(--primary); font-size: 1.2rem; margin-bottom: 10px; }
+        .card p { color: #666; line-height: 1.6; font-size: 0.95rem; flex: 1; }
+        .card-meta { margin-top: 15px; padding-top: 15px; border-top: 1px solid #f0f0f0; display: flex; justify-content: space-between; font-size: 0.9rem; }
+        .card-btn { background: var(--secondary); color: white; padding: 5px 15px; border-radius: 4px; text-decoration: none; font-size: 0.8rem; cursor: pointer;}
 
         /* --- Footer --- */
-        footer { background: #222; color: #ccc; padding: 40px 20px; text-align: center; margin-top: 50px; }
+        footer { background: #1a1a1a; color: #ccc; padding: 50px 20px; text-align: center; margin-top: 50px; border-top: 5px solid var(--accent); }
 
-        /* --- Admin & Modals --- */
-        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 2000; display: none; justify-content: center; align-items: center; padding: 20px; }
-        .modal-content { background: white; padding: 25px; border-radius: 10px; width: 100%; max-width: 600px; max-height: 90vh; overflow-y: auto; position: relative; }
-        .dashboard-modal { max-width: 95%; height: 95vh; }
+        /* ================== ADMIN DASHBOARD (Professional) ================== */
+        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 2000; display: none; justify-content: center; align-items: center; padding: 20px; backdrop-filter: blur(5px); }
+        .dashboard-container { 
+            background: var(--dashboard-bg); width: 95vw; height: 95vh; border-radius: 15px; overflow: hidden; display: flex; 
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+        }
         
-        .tab-btn { padding: 8px 15px; border: 1px solid #ddd; background: #eee; cursor: pointer; margin-right: 5px; border-radius: 4px; }
-        .tab-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
-        .form-group { margin-bottom: 15px; border-bottom: 1px solid #f0f0f0; padding-bottom: 10px; }
-        .form-group label { display: block; font-weight: bold; margin-bottom: 5px; }
-        .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; }
+        .dash-sidebar { width: 250px; background: #2c3e50; color: white; display: flex; flex-direction: column; padding: 20px 0; }
+        .dash-sidebar h3 { text-align: center; margin-bottom: 30px; color: var(--accent); border-bottom: 1px solid #34495e; padding-bottom: 20px; }
+        .dash-nav-btn { 
+            padding: 15px 25px; border: none; background: none; color: #ecf0f1; text-align: start; cursor: pointer; 
+            transition: 0.3s; display: flex; align-items: center; gap: 10px; font-size: 1rem;
+        }
+        .dash-nav-btn:hover, .dash-nav-btn.active { background: var(--primary); color: white; border-left: 5px solid var(--accent); }
         
-        .btn { padding: 8px 15px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; color: white; }
+        .dash-content { flex: 1; padding: 30px; overflow-y: auto; }
+        
+        /* Stats Cards in Dashboard */
+        .dash-stats-row { display: flex; gap: 20px; margin-bottom: 30px; }
+        .dash-stat-card { 
+            flex: 1; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); 
+            display: flex; align-items: center; justify-content: space-between;
+        }
+        .dash-stat-num { font-size: 2rem; font-weight: bold; color: var(--dark); }
+        .dash-stat-label { color: #7f8c8d; font-size: 0.9rem; }
+        .dash-stat-icon { font-size: 2.5rem; color: var(--secondary); opacity: 0.3; }
+
+        /* Forms */
+        .admin-form-group { margin-bottom: 20px; background: white; padding: 15px; border-radius: 8px; border: 1px solid #e0e0e0; }
+        .admin-input { width: 100%; padding: 10px; margin-top: 5px; border: 1px solid #ccc; border-radius: 5px; }
+        .btn { padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; color: white; transition: 0.3s; }
         .btn-primary { background: var(--primary); }
-        .btn-danger { background: #d32f2f; }
-        .btn-secondary { background: #555; }
+        .btn-danger { background: #e74c3c; }
+        .btn-success { background: #27ae60; }
+        .btn:hover { opacity: 0.9; transform: translateY(-2px); }
 
-        .image-list-item { display: flex; justify-content: space-between; background: #eee; padding: 5px; margin-bottom: 5px; border-radius: 4px; align-items: center; }
-        .image-list-item img { height: 40px; width: 40px; object-fit: cover; border-radius: 4px; }
+        /* --- Helper Classes --- */
+        .hidden { display: none; }
     </style>
 </head>
 <body>
 
+    <!-- Language Toggle -->
+    <button class="lang-btn" onclick="toggleLanguage()">
+        <i class="fas fa-globe"></i> <span id="lang-text">Français</span>
+    </button>
+
     <!-- Header -->
     <header>
-        <div class="logo-container" id="logo-display">
-             <h2 style="color: var(--primary);">AFMAP</h2>
+        <div class="logo-container">
+             <div style="font-size:2rem; color:var(--primary);"><i class="fas fa-leaf"></i></div>
+             <div>
+                 <h2 style="color: var(--primary); line-height:1;">AFMAP</h2>
+                 <small style="font-size:0.7rem; color:#666;" data-key="header_subtitle">Medicinal Plants</small>
+             </div>
         </div>
         <button class="menu-btn" onclick="toggleMenu()"><i class="fas fa-bars"></i></button>
     </header>
 
-    <!-- Side Menu -->
+    <!-- Sidebar -->
     <div class="sidebar-overlay" onclick="toggleMenu()" id="overlay"></div>
     <div class="side-menu" id="side-menu">
-        <div class="close-menu" onclick="toggleMenu()">&times;</div>
-        <a href="#hero" class="side-link" onclick="toggleMenu()"><i class="fas fa-home"></i> الرئيسية</a>
-        <a href="#services" class="side-link" onclick="toggleMenu()"><i class="fas fa-hand-holding-heart"></i> الخدمات</a>
-        <a href="#products" class="side-link" onclick="toggleMenu()"><i class="fas fa-leaf"></i> المنتجات</a>
-        <a href="#founders" class="side-link" onclick="toggleMenu()"><i class="fas fa-users"></i> المؤسسين</a>
-        <a href="#contact" class="side-link" onclick="toggleMenu()"><i class="fas fa-envelope"></i> اتصل بنا</a>
-        <a href="#" class="side-link admin-login-link" onclick="openLoginModal()"><i class="fas fa-user-shield"></i> لوحة الإدارة</a>
+        <div style="text-align: end; margin-bottom: 20px;"><i class="fas fa-times close-menu" onclick="toggleMenu()" style="cursor:pointer; font-size:1.5rem;"></i></div>
+        <a href="#hero" class="side-link" onclick="toggleMenu()"><i class="fas fa-home"></i> <span data-key="nav_home">الرئيسية</span></a>
+        <a href="#services" class="side-link" onclick="toggleMenu()"><i class="fas fa-hand-holding-heart"></i> <span data-key="nav_services">الخدمات</span></a>
+        <a href="#products" class="side-link" onclick="toggleMenu()"><i class="fas fa-leaf"></i> <span data-key="nav_products">المنتجات</span></a>
+        <a href="#blog" class="side-link" onclick="toggleMenu()"><i class="fas fa-newspaper"></i> <span data-key="nav_blog">المدونة</span></a>
+        <a href="#founders" class="side-link" onclick="toggleMenu()"><i class="fas fa-users"></i> <span data-key="nav_founders">المؤسسين</span></a>
+        <a href="#contact" class="side-link" onclick="toggleMenu()"><i class="fas fa-envelope"></i> <span data-key="nav_contact">اتصل بنا</span></a>
+        <a href="#" class="side-link" onclick="openLoginModal()" style="margin-top:auto; background:var(--dark); color:white; justify-content:center; border-radius:8px;"><i class="fas fa-lock"></i> Admin</a>
     </div>
 
     <!-- Hero -->
     <section class="hero" id="hero">
         <div class="hero-content fade-in">
             <div class="event-wrapper">
-                <div class="event-badge" id="hero-event-text">Next Event Loading...</div>
-                <a href="#" class="event-btn" id="hero-event-btn" style="display: none;">التسجيل الآن</a>
+                <div class="event-badge event-glow" id="hero-event-text">Loading Event...</div>
             </div>
             <h1 id="hero-title">AFMAP</h1>
-            <p id="hero-desc" style="font-size: 1.2rem;">الطبيعة بين أيدينا</p>
+            <p id="hero-desc" style="font-size: 1.3rem; margin-bottom:20px;">Welcome</p>
         </div>
     </section>
 
     <!-- Stats -->
     <div class="stats-bar" id="stats-display">
-        <!-- Injected via JS -->
+        <!-- Stats Loaded from Firebase -->
+        <div style="text-align:center; width:100%;">Loading Stats...</div>
     </div>
-
-    <!-- About -->
-    <section class="section-container" id="about">
-        <h2 class="section-title">من نحن</h2>
-        <div style="text-align: center; max-width: 800px; margin: 0 auto; line-height: 1.8; color: #555;">
-            <p>المؤسسة الجزائرية للنباتات الطبية والعطرية هي منارة علمية تهدف لحماية وتثمين التنوع البيولوجي في الجزائر.</p>
-        </div>
-    </section>
 
     <!-- Services -->
     <section class="section-container" style="background: white;" id="services">
-        <h2 class="section-title">خدماتنا</h2>
+        <h2 class="section-title" data-key="sec_services">خدماتنا</h2>
         <div class="grid" id="services-grid"></div>
     </section>
 
-    <!-- Founders (2 per row) -->
-    <section class="section-container" id="founders">
-        <h2 class="section-title">المؤسسين</h2>
-        <div class="founders-grid" id="founders-grid"></div>
+    <!-- Products -->
+    <section class="section-container" id="products">
+        <h2 class="section-title" data-key="sec_products">منتجاتنا</h2>
+        <div class="grid" id="products-grid"></div>
     </section>
 
-    <!-- Products -->
-    <section class="section-container" style="background: white;" id="products">
-        <h2 class="section-title">منتجاتنا</h2>
-        <div class="grid" id="products-grid"></div>
+    <!-- Blog -->
+    <section class="section-container" style="background: white;" id="blog">
+        <h2 class="section-title" data-key="sec_blog">المدونة</h2>
+        <div class="grid" id="blog-grid"></div>
+    </section>
+
+    <!-- Founders -->
+    <section class="section-container" id="founders">
+        <h2 class="section-title" data-key="sec_founders">المؤسسين</h2>
+        <div class="founders-grid" id="founders-grid"></div>
     </section>
 
     <!-- Contact -->
     <section class="section-container" style="background: #2e7d32; color: white;" id="contact">
-        <h2 class="section-title" style="color: white; border-color: white;">اتصل بنا</h2>
-        <div style="text-align: center;">
-            <p><i class="fas fa-phone"></i> <span id="contact-phone">0540043640</span></p>
-            <p><i class="fas fa-envelope"></i> <span id="contact-email">info@afmap-dz.com</span></p>
-            <p><i class="fas fa-map-marker-alt"></i> الجزائر، العاصمة</p>
+        <h2 class="section-title" style="color: white; border-color: white;" data-key="sec_contact">اتصل بنا</h2>
+        <div style="text-align: center; font-size:1.2rem;">
+            <p><i class="fas fa-phone"></i> <span id="contact-phone">...</span></p>
+            <p style="margin-top:10px;"><i class="fas fa-envelope"></i> <span id="contact-email">...</span></p>
         </div>
     </section>
 
     <footer>
-        <p>جميع الحقوق محفوظة &copy; 2026 AFMAP</p>
+        <p>AFMAP &copy; 2026. All Rights Reserved.</p>
     </footer>
 
-    <!-- ================== MODALS ================== -->
+    <!-- ================== ADMIN MODALS ================== -->
 
-    <!-- Login Modal -->
+    <!-- Login -->
     <div class="modal" id="login-modal">
-        <div class="modal-content" style="max-width: 350px; text-align: center;">
-            <h3 style="margin-bottom: 15px;">تسجيل الدخول</h3>
-            <div class="form-group"><input type="text" id="admin-user" placeholder="اسم المستخدم"></div>
-            <div class="form-group"><input type="password" id="admin-pass" placeholder="كلمة المرور"></div>
-            <button class="btn btn-primary" style="width:100%" onclick="checkLogin()">دخول</button>
-            <button class="btn btn-secondary" style="width:100%; margin-top:5px;" onclick="closeLogin()">إلغاء</button>
+        <div style="background:white; padding:30px; border-radius:10px; text-align:center; width:300px;">
+            <h3 style="margin-bottom:15px; color:var(--primary);">Admin Login</h3>
+            <input type="password" id="admin-pass" class="admin-input" placeholder="Password" style="margin-bottom:15px;">
+            <button class="btn btn-primary" style="width:100%" onclick="checkLogin()">Login</button>
+            <button class="btn" style="width:100%; margin-top:5px; color:#666;" onclick="document.getElementById('login-modal').style.display='none'">Cancel</button>
         </div>
     </div>
 
-    <!-- Admin Dashboard -->
-    <div class="modal" id="admin-dashboard">
-        <div class="modal-content dashboard-modal">
-            <div style="display:flex; justify-content:space-between; margin-bottom:20px; border-bottom:2px solid #eee; padding-bottom:10px;">
-                <h2>لوحة التحكم</h2>
-                <button class="btn btn-danger" onclick="logout()">خروج</button>
+    <!-- DASHBOARD -->
+    <div class="modal" id="dashboard-modal">
+        <div class="dashboard-container">
+            <!-- Sidebar -->
+            <div class="dash-sidebar">
+                <h3>AFMAP <span>CMS</span></h3>
+                <button class="dash-nav-btn active" onclick="switchTab('home')"><i class="fas fa-home"></i> نظرة عامة</button>
+                <button class="dash-nav-btn" onclick="switchTab('hero')"><i class="fas fa-image"></i> الواجهة & الخلفيات</button>
+                <button class="dash-nav-btn" onclick="switchTab('stats')"><i class="fas fa-chart-bar"></i> شريط الأرقام</button>
+                <button class="dash-nav-btn" onclick="switchTab('services')"><i class="fas fa-hand-holding-heart"></i> الخدمات</button>
+                <button class="dash-nav-btn" onclick="switchTab('products')"><i class="fas fa-leaf"></i> المنتجات</button>
+                <button class="dash-nav-btn" onclick="switchTab('blog')"><i class="fas fa-newspaper"></i> المدونة</button>
+                <button class="dash-nav-btn" onclick="switchTab('founders')"><i class="fas fa-users"></i> المؤسسين</button>
+                <div style="margin-top:auto; padding:0 20px;">
+                    <button class="btn btn-danger" style="width:100%" onclick="location.reload()">تسجيل الخروج</button>
+                </div>
             </div>
-
-            <!-- Tabs -->
-            <div style="display: flex; gap: 5px; flex-wrap: wrap; margin-bottom: 15px;">
-                <button class="tab-btn active" onclick="showTab('hero')">الواجهة & الصور</button>
-                <button class="tab-btn" onclick="showTab('stats')">الإحصائيات</button>
-                <button class="tab-btn" onclick="showTab('founders')">المؤسسين</button>
-                <button class="tab-btn" onclick="showTab('services')">الخدمات</button>
-                <button class="tab-btn" onclick="showTab('products')">المنتجات</button>
-            </div>
-
-            <div id="admin-content-area" style="padding-bottom: 20px;"></div>
             
-            <button class="btn btn-secondary" onclick="document.getElementById('admin-dashboard').style.display='none'">إغلاق اللوحة</button>
+            <!-- Content -->
+            <div class="dash-content" id="dash-content">
+                <!-- Injected via JS -->
+            </div>
         </div>
     </div>
 
-    <script>
-        // --- DATA STRUCTURE ---
-        const defaultData = {
-            settings: {
-                logo: null,
-                heroImages: [
-                    "https://images.unsplash.com/photo-1501004318641-b39e6451bec6?w=1350",
-                    "https://images.unsplash.com/photo-1466692476868-aef1dfb1e735?w=1350",
-                    "https://images.unsplash.com/photo-1471943311424-64942b855297?w=1350"
-                ],
-                heroTitle: "AFMAP",
-                heroDesc: "الطبيعة بين أيدينا",
-                eventText: "Event: 17 Feb 2026",
-                eventLink: "#",
-                eventLinkText: "سجل الآن",
-                contactPhone: "0540043640",
-                contactEmail: "info@afmap-dz.com"
-            },
-            stats: [
-                { id: 1, text: "+700 نبات", icon: "fa-leaf" },
-                { id: 2, text: "+160 باحث", icon: "fa-user-graduate" },
-                { id: 3, text: "+50 دراسة", icon: "fa-flask" }
-            ],
-            services: [],
-            products: [],
-            founders: [
-                { name: "أحمد بن محمد", role: "المدير العام", desc: "خبير في الأعشاب الطبية", contact: "ahmed@email.com", img: "https://randomuser.me/api/portraits/men/32.jpg" },
-                { name: "د. سارة علي", role: "رئيسة الأبحاث", desc: "دكتوراه في البيولوجيا", contact: "sara@email.com", img: "https://randomuser.me/api/portraits/women/44.jpg" }
-            ]
+    <!-- Firebase SDKs & Logic -->
+    <script type="module">
+        // Import Functions from CDN
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-analytics.js";
+        import { getFirestore, doc, getDoc, setDoc, updateDoc, collection, getDocs, addDoc, deleteDoc, increment } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+
+        // ==========================================================
+        //  إعدادات FIREBASE الخاصة بك (تم دمجها بنجاح)
+        // ==========================================================
+        const firebaseConfig = {
+            apiKey: "AIzaSyAaXp-gUOQ_G2s-kM8JhaqW8TJcJ4Nqcuo",
+            authDomain: "comondi-fae4b.firebaseapp.com",
+            projectId: "comondi-fae4b",
+            storageBucket: "comondi-fae4b.firebasestorage.app",
+            messagingSenderId: "932777870241",
+            appId: "1:932777870241:web:78b0cf3a3cf14046be01e0",
+            measurementId: "G-M09RX0V18S"
         };
 
-        let db = JSON.parse(localStorage.getItem('afmap_v3')) || defaultData;
-        let sliderInterval;
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const analytics = getAnalytics(app); // Analytics started
+        const db = getFirestore(app); // Database started
 
-        // --- CORE FUNCTIONS ---
-        function saveDB() {
+        // --- GLOBAL VARIABLES ---
+        window.currentLang = 'ar';
+        const translations = {
+            ar: {
+                nav_home: "الرئيسية", nav_services: "الخدمات", nav_products: "المنتجات", nav_blog: "المدونة", nav_founders: "المؤسسين", nav_contact: "اتصل بنا",
+                sec_services: "خدماتنا", sec_products: "منتجاتنا", sec_blog: "المدونة", sec_founders: "المؤسسين", sec_contact: "اتصل بنا",
+                header_subtitle: "المؤسسة الجزائرية للنباتات الطبية"
+            },
+            fr: {
+                nav_home: "Accueil", nav_services: "Services", nav_products: "Produits", nav_blog: "Blog", nav_founders: "Fondateurs", nav_contact: "Contact",
+                sec_services: "Nos Services", sec_products: "Nos Produits", sec_blog: "Notre Blog", sec_founders: "Fondateurs", sec_contact: "Contactez-nous",
+                header_subtitle: "Fondation Algérienne des Plantes Médicinales"
+            }
+        };
+
+        // --- MAIN FUNCTIONS ---
+
+        // 1. Load Data on Start
+        async function loadSiteData() {
+            // Track Visit
+            trackVisit();
+
+            // Load Hero & Settings
             try {
-                localStorage.setItem('afmap_v3', JSON.stringify(db));
+                const settingsSnap = await getDoc(doc(db, "site_content", "settings"));
+                if (settingsSnap.exists()) {
+                    const data = settingsSnap.data();
+                    renderHero(data);
+                    renderContact(data);
+                    window.heroImages = data.heroImages || [];
+                    startSlider();
+                } else {
+                    // Initialize default data if db is empty
+                    console.log("No settings found, please login to admin to set up.");
+                    document.getElementById('hero-title').innerText = "AFMAP";
+                }
+            } catch (error) {
+                console.error("Error loading settings:", error);
+                document.getElementById('hero-title').innerText = "Error Loading Data (Check Firestore Rules)";
+            }
+
+            // Load Collections
+            renderCollection("stats", "stats-display");
+            renderCollection("services", "services-grid");
+            renderCollection("products", "products-grid");
+            renderCollection("blog", "blog-grid");
+            renderCollection("founders", "founders-grid");
+        }
+
+        // 2. Render Logic
+        function renderHero(data) {
+            document.getElementById('hero-title').innerText = data.heroTitle || "AFMAP";
+            document.getElementById('hero-desc').innerText = data.heroDesc || "";
+            document.getElementById('hero-event-text').innerText = data.eventText || "No Events";
+        }
+
+        function renderContact(data) {
+            document.getElementById('contact-phone').innerText = data.phone || "";
+            document.getElementById('contact-email').innerText = data.email || "";
+        }
+
+        async function renderCollection(colName, elId) {
+            const container = document.getElementById(elId);
+            container.innerHTML = ''; // Clear
+            try {
+                const querySnapshot = await getDocs(collection(db, colName));
+                
+                querySnapshot.forEach((doc) => {
+                    const item = doc.data();
+                    const id = doc.id;
+                    
+                    if (colName === 'stats') {
+                        container.innerHTML += `
+                            <div class="stat-item fade-in">
+                                <i class="fas ${item.icon}"></i>
+                                <span class="stat-num">${item.num}</span>
+                                <span>${item.text}</span>
+                            </div>`;
+                    } else if (colName === 'founders') {
+                        container.innerHTML += `
+                            <div class="card fade-in" style="align-items:center; text-align:center;">
+                                <img src="${item.img || 'https://via.placeholder.com/150'}" style="width:120px; height:120px; border-radius:50%; margin-top:20px; border:3px solid var(--primary); object-fit: cover;">
+                                <div class="card-body">
+                                    <h3>${item.name}</h3>
+                                    <div style="color:var(--primary); font-weight:bold;">${item.role}</div>
+                                    <p>${item.desc || ''}</p>
+                                </div>
+                            </div>`;
+                    } else {
+                        // Products, Services, Blog
+                        container.innerHTML += `
+                            <div class="card fade-in">
+                                <img src="${item.img || 'https://via.placeholder.com/300'}" class="card-img">
+                                <div class="card-body">
+                                    <h3>${item.title}</h3>
+                                    <p>${item.desc}</p>
+                                    ${item.link ? `<a href="${item.link}" target="_blank" class="card-btn">اقرأ المزيد</a>` : ''}
+                                </div>
+                            </div>`;
+                    }
+                });
             } catch (e) {
-                alert("ذاكرة المتصفح ممتلئة، يرجى استخدام صور أصغر.");
+                console.log("Collection empty or permission denied: " + colName);
             }
         }
 
-        function toggleMenu() {
-            const menu = document.getElementById('side-menu');
-            const overlay = document.getElementById('overlay');
-            if (menu.classList.contains('active')) {
-                menu.classList.remove('active');
-                overlay.style.display = 'none';
-            } else {
-                menu.classList.add('active');
-                overlay.style.display = 'block';
-            }
-        }
-
-        // --- HERO SLIDER ---
-        function initSlider() {
-            if (sliderInterval) clearInterval(sliderInterval);
-            let currentSlide = 0;
+        // 3. Slider
+        function startSlider() {
+            if(!window.heroImages || window.heroImages.length === 0) return;
+            let idx = 0;
             const heroEl = document.getElementById('hero');
-            const images = db.settings.heroImages;
-
-            if (images.length > 0) {
-                heroEl.style.backgroundImage = `url('${images[0]}')`;
-                if (images.length > 1) {
-                    sliderInterval = setInterval(() => {
-                        currentSlide = (currentSlide + 1) % images.length;
-                        heroEl.style.backgroundImage = `url('${images[currentSlide]}')`;
-                    }, 3000); // Change every 3 seconds
-                }
-            }
-        }
-
-        // --- RENDERING ---
-        function renderSite() {
-            // Header & Hero Text
-            if (db.settings.logo) document.getElementById('logo-display').innerHTML = `<img src="${db.settings.logo}" alt="Logo">`;
-            document.getElementById('hero-title').innerText = db.settings.heroTitle;
-            document.getElementById('hero-desc').innerText = db.settings.heroDesc;
-            document.getElementById('hero-event-text').innerText = db.settings.eventText;
+            heroEl.style.backgroundImage = `url('${window.heroImages[0]}')`;
             
-            // Hero Event Button
-            const btn = document.getElementById('hero-event-btn');
-            if (db.settings.eventLink && db.settings.eventLink.length > 1) {
-                btn.style.display = 'inline-block';
-                btn.href = db.settings.eventLink;
-                btn.innerText = db.settings.eventLinkText || "اضغط هنا";
-            } else {
-                btn.style.display = 'none';
+            if(window.heroImages.length > 1) {
+                setInterval(() => {
+                    idx = (idx + 1) % window.heroImages.length;
+                    heroEl.style.backgroundImage = `url('${window.heroImages[idx]}')`;
+                }, 3000);
             }
-
-            // Slider
-            initSlider();
-
-            // Stats
-            const statsContainer = document.getElementById('stats-display');
-            statsContainer.innerHTML = '';
-            db.stats.forEach(s => {
-                statsContainer.innerHTML += `
-                    <div class="stat-item fade-in">
-                        <i class="fas ${s.icon}"></i>
-                        <span class="stat-num">${s.text.split(' ')[0]}</span>
-                        <span class="stat-text">${s.text.split(' ').slice(1).join(' ')}</span>
-                    </div>
-                `;
-            });
-
-            // Contact
-            document.getElementById('contact-phone').innerText = db.settings.contactPhone;
-            document.getElementById('contact-email').innerText = db.settings.contactEmail;
-
-            // Grids
-            renderGrid('services', db.services);
-            renderGrid('products', db.products);
-            renderFounders();
         }
 
-        function renderGrid(type, data) {
-            const container = document.getElementById(`${type}-grid`);
-            container.innerHTML = '';
-            data.forEach(item => {
-                let metaHTML = '';
-                if(item.link || item.info) {
-                    metaHTML = `<div class="card-meta">
-                        ${item.link ? `<a href="${item.link}" target="_blank" style="text-decoration:none; color:var(--primary);"><i class="fas fa-link"></i> رابط</a>` : ''}
-                        ${item.info ? `<span onclick="alert('${item.info}')" style="cursor:pointer; margin-right:10px;"><i class="fas fa-info-circle"></i> معلومات</span>` : ''}
-                    </div>`;
+        // 4. Visitor Tracking (Firestore)
+        async function trackVisit() {
+            const today = new Date().toLocaleDateString();
+            const lastVisit = localStorage.getItem('last_visit');
+            
+            if (lastVisit !== today) {
+                const statsRef = doc(db, "analytics", "visitors");
+                try {
+                    await updateDoc(statsRef, {
+                        daily: increment(1),
+                        monthly: increment(1)
+                    });
+                } catch (err) {
+                    // Create if not exists
+                    await setDoc(statsRef, { daily: 1, monthly: 1 });
                 }
-
-                container.innerHTML += `
-                    <div class="card fade-in">
-                        <img src="${item.img || 'https://via.placeholder.com/300'}" class="card-img">
-                        <div class="card-body">
-                            <h3>${item.title}</h3>
-                            <p style="font-size:0.9rem; color:#666;">${item.desc}</p>
-                            ${metaHTML}
-                        </div>
-                    </div>
-                `;
-            });
-        }
-        
-        function renderFounders() {
-            const container = document.getElementById('founders-grid');
-            container.innerHTML = '';
-            db.founders.forEach(f => {
-                container.innerHTML += `
-                    <div class="card fade-in" style="text-align:center;">
-                        <img src="${f.img || 'https://via.placeholder.com/150'}" style="width:120px; height:120px; border-radius:50%; margin-top:20px; object-fit:cover; border:3px solid var(--primary);">
-                        <div class="card-body">
-                            <h3>${f.name}</h3>
-                            <div style="color:var(--primary); font-weight:bold; margin-bottom:5px;">${f.role}</div>
-                            <p style="font-size:0.85rem; color:#666; margin-bottom:10px;">${f.desc || ''}</p>
-                            ${f.contact ? `<div style="font-size:0.8rem; background:#f0f0f0; padding:5px; border-radius:5px;"><i class="fas fa-envelope"></i> ${f.contact}</div>` : ''}
-                        </div>
-                    </div>
-                `;
-            });
+                localStorage.setItem('last_visit', today);
+            }
         }
 
-        // --- ADMIN AUTH ---
-        function openLoginModal() { 
-            toggleMenu(); 
-            document.getElementById('login-modal').style.display = 'flex'; 
-        }
-        function closeLogin() { document.getElementById('login-modal').style.display = 'none'; }
-        
-        function checkLogin() {
-            if(document.getElementById('admin-user').value === 'admin' && 
-               document.getElementById('admin-pass').value === 'abobob123') {
-                closeLogin();
-                openDashboard();
-            } else { alert('بيانات خاطئة'); }
+        // --- ADMIN FUNCTIONS ---
+        window.checkLogin = function() {
+            const pass = document.getElementById('admin-pass').value;
+            if (pass === "abobob123") { // Simple protection
+                document.getElementById('login-modal').style.display = 'none';
+                document.getElementById('dashboard-modal').style.display = 'flex';
+                switchTab('home');
+            } else {
+                alert("Wrong Password");
+            }
         }
 
-        function logout() {
-            document.getElementById('admin-dashboard').style.display = 'none';
-        }
-
-        // --- ADMIN DASHBOARD LOGIC ---
-        function openDashboard() {
-            document.getElementById('admin-dashboard').style.display = 'flex';
-            showTab('hero');
-        }
-
-        function showTab(tabName) {
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        window.switchTab = async function(tab) {
+            // Update UI
+            document.querySelectorAll('.dash-nav-btn').forEach(b => b.classList.remove('active'));
             event.target.classList.add('active');
+            
+            const content = document.getElementById('dash-content');
+            content.innerHTML = '<div style="text-align:center; padding:50px;"><i class="fas fa-spinner fa-spin fa-3x"></i></div>';
 
-            const area = document.getElementById('admin-content-area');
-            area.innerHTML = ''; 
-
-            if(tabName === 'hero') {
-                // Images List
-                let imagesHtml = '';
-                db.settings.heroImages.forEach((img, idx) => {
-                    imagesHtml += `<div class="image-list-item"><img src="${img}"> <button class="btn btn-danger" style="font-size:0.8rem;" onclick="deleteHeroImage(${idx})">X</button></div>`;
-                });
-
-                area.innerHTML = `
-                    <h3>إعدادات الواجهة</h3>
-                    <div class="form-group"><label>تغيير اللوجو</label><input type="file" accept="image/*" onchange="uploadImage(this, (url)=>{ db.settings.logo = url; saveDB(); renderSite(); })"></div>
-                    <div class="form-group">
-                        <label>صور الخلفية (تتغير كل 3 ثواني)</label>
-                        <div id="hero-img-list">${imagesHtml}</div>
-                        <input type="file" accept="image/*" style="margin-top:5px;" onchange="uploadImage(this, (url)=>{ db.settings.heroImages.push(url); saveDB(); renderSite(); showTab('hero'); })">
-                    </div>
-                    <div class="form-group"><label>العنوان الرئيسي</label><input type="text" value="${db.settings.heroTitle}" onchange="db.settings.heroTitle=this.value; saveDB(); renderSite();"></div>
-                    <div class="form-group"><label>وصف مختصر</label><input type="text" value="${db.settings.heroDesc}" onchange="db.settings.heroDesc=this.value; saveDB(); renderSite();"></div>
-                    <div class="form-group"><label>نص الحدث (Next Event)</label><input type="text" value="${db.settings.eventText}" onchange="db.settings.eventText=this.value; saveDB(); renderSite();"></div>
-                    <div class="form-group"><label>رابط زر الحدث (اختياري)</label><input type="text" placeholder="http://..." value="${db.settings.eventLink}" onchange="db.settings.eventLink=this.value; saveDB(); renderSite();"></div>
-                    <div class="form-group"><label>نص زر الحدث</label><input type="text" placeholder="مثال: سجل الآن" value="${db.settings.eventLinkText}" onchange="db.settings.eventLinkText=this.value; saveDB(); renderSite();"></div>
-                `;
-            }
-            else if (tabName === 'stats') {
-                area.innerHTML = `<h3>إعدادات الإحصائيات</h3>`;
-                db.stats.forEach((stat, idx) => {
-                    area.innerHTML += `
-                        <div style="background:#f9f9f9; padding:10px; margin-bottom:10px; border-radius:5px;">
-                            <label>إحصائية رقم ${idx+1}</label>
-                            <input type="text" value="${stat.text}" onchange="db.stats[${idx}].text=this.value; saveDB(); renderSite();" placeholder="الرقم والنص">
-                            <label style="margin-top:5px; font-size:0.8rem;">الأيقونة:</label>
-                            <select onchange="db.stats[${idx}].icon=this.value; saveDB(); renderSite();" style="width:100%; padding:5px;">
-                                <option value="fa-leaf" ${stat.icon==='fa-leaf'?'selected':''}>نبات (Leaf)</option>
-                                <option value="fa-user-graduate" ${stat.icon==='fa-user-graduate'?'selected':''}>باحث (Scholar)</option>
-                                <option value="fa-flask" ${stat.icon==='fa-flask'?'selected':''}>دراسة/مختبر (Flask)</option>
-                                <option value="fa-chart-line" ${stat.icon==='fa-chart-line'?'selected':''}>بيانات (Chart)</option>
-                                <option value="fa-globe" ${stat.icon==='fa-globe'?'selected':''}>عالمي (Globe)</option>
-                            </select>
+            if (tab === 'home') {
+                // Get Stats
+                let visits = { daily:0, monthly:0 };
+                try {
+                    const analyticsSnap = await getDoc(doc(db, "analytics", "visitors"));
+                    if(analyticsSnap.exists()) visits = analyticsSnap.data();
+                } catch(e) {}
+                
+                content.innerHTML = `
+                    <h2>لوحة التحكم / نظرة عامة</h2>
+                    <div class="dash-stats-row">
+                        <div class="dash-stat-card">
+                            <div><div class="dash-stat-num">${visits.daily}</div><div class="dash-stat-label">زيارات اليوم</div></div>
+                            <i class="fas fa-users dash-stat-icon"></i>
                         </div>
-                    `;
-                });
-            }
-            else if (tabName === 'founders') {
-                renderAdminFounders(area);
-            }
-            else {
-                // Products / Services
-                renderAdminList(tabName, area);
+                        <div class="dash-stat-card">
+                            <div><div class="dash-stat-num">${visits.monthly}</div><div class="dash-stat-label">زيارات الشهر</div></div>
+                            <i class="fas fa-calendar-alt dash-stat-icon"></i>
+                        </div>
+                    </div>
+                    <div style="background:white; padding:20px; border-radius:10px;">
+                        <h4>حالة النظام</h4>
+                        <p style="color:green;"><i class="fas fa-check-circle"></i> قاعدة البيانات متصلة (Firebase)</p>
+                        <p style="color:#666; font-size:0.9rem; margin-top:10px;">Project ID: comondi-fae4b</p>
+                    </div>
+                `;
+            } else if (tab === 'hero') {
+                const snap = await getDoc(doc(db, "site_content", "settings"));
+                const data = snap.exists() ? snap.data() : {};
+                
+                content.innerHTML = `
+                    <h2>تعديل الواجهة</h2>
+                    <div class="admin-form-group">
+                        <label>العنوان الرئيسي</label>
+                        <input id="in-hero-title" class="admin-input" value="${data.heroTitle || ''}">
+                        <label>الوصف</label>
+                        <input id="in-hero-desc" class="admin-input" value="${data.heroDesc || ''}">
+                        <label>نص الحدث (Event)</label>
+                        <input id="in-event" class="admin-input" value="${data.eventText || ''}">
+                        <label>الهاتف</label>
+                        <input id="in-phone" class="admin-input" value="${data.phone || ''}">
+                        <label>الايميل</label>
+                        <input id="in-email" class="admin-input" value="${data.email || ''}">
+                        <button class="btn btn-primary" style="margin-top:10px;" onclick="saveSettings()">حفظ التغييرات</button>
+                    </div>
+                    <div class="admin-form-group">
+                        <label>إضافة صورة خلفية</label>
+                        <input type="file" id="hero-file-in" accept="image/*" class="admin-input">
+                        <button class="btn btn-success" style="margin-top:5px;" onclick="uploadHeroImage()">رفع الصورة</button>
+                        <div style="margin-top:10px; font-size:0.8rem; color:red;">* صور أقل من 1MB فقط</div>
+                    </div>
+                `;
+            } else {
+                // Generic List (Services, Products, etc.)
+                renderAdminList(tab, content);
             }
         }
 
-        // --- ADMIN: FOUNDERS SPECIFIC ---
-        function renderAdminFounders(container) {
-            container.innerHTML = `<h3>إدارة المؤسسين</h3>
-            <div style="background:#f0f0f0; padding:15px; border-radius:8px; margin-bottom:20px;">
-                <h4>إضافة مؤسس</h4>
-                <div class="form-group"><input type="text" id="nf-name" placeholder="الاسم الكامل"></div>
-                <div class="form-group"><input type="text" id="nf-role" placeholder="المهنة / الدور"></div>
-                <div class="form-group"><textarea id="nf-desc" placeholder="وصف قصير ومهام"></textarea></div>
-                <div class="form-group"><input type="text" id="nf-contact" placeholder="معلومات اتصال (ايميل/هاتف)"></div>
-                <div class="form-group"><label>صورة</label><input type="file" id="nf-img" accept="image/*"></div>
-                <button class="btn btn-primary" onclick="addFounder()">إضافة</button>
-            </div>`;
+        // Save Settings to Firebase
+        window.saveSettings = async function() {
+            await setDoc(doc(db, "site_content", "settings"), {
+                heroTitle: document.getElementById('in-hero-title').value,
+                heroDesc: document.getElementById('in-hero-desc').value,
+                eventText: document.getElementById('in-event').value,
+                phone: document.getElementById('in-phone').value,
+                email: document.getElementById('in-email').value
+            }, { merge: true });
+            alert("تم الحفظ!");
+            loadSiteData(); // Refresh View
+        }
 
-            db.founders.forEach((f, idx) => {
-                container.innerHTML += `<div style="display:flex; justify-content:space-between; align-items:center; background:white; padding:10px; border-bottom:1px solid #ddd;">
-                    <span>${f.name} - ${f.role}</span>
-                    <button class="btn btn-danger" onclick="deleteFounder(${idx})">حذف</button>
-                </div>`;
+        // Upload Hero Image (Base64 -> Firebase Array)
+        window.uploadHeroImage = function() {
+            const file = document.getElementById('hero-file-in').files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = async function(e) {
+                const base64 = e.target.result;
+                const snap = await getDoc(doc(db, "site_content", "settings"));
+                let currentImgs = (snap.exists() && snap.data().heroImages) ? snap.data().heroImages : [];
+                currentImgs.push(base64);
+                
+                await setDoc(doc(db, "site_content", "settings"), { heroImages: currentImgs }, { merge: true });
+                alert("تم رفع الصورة!");
+            };
+            reader.readAsDataURL(file);
+        }
+
+        // Render Admin Lists (CRUD)
+        async function renderAdminList(colName, container) {
+            container.innerHTML = `
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <h2>إدارة ${colName}</h2>
+                    <button class="btn btn-success" onclick="document.getElementById('add-box').classList.remove('hidden')">+ إضافة جديد</button>
+                </div>
+                
+                <!-- Add Form -->
+                <div id="add-box" class="admin-form-group hidden" style="border:2px solid var(--primary);">
+                    <h4>إضافة عنصر جديد</h4>
+                    <input id="new-title" class="admin-input" placeholder="العنوان / الاسم">
+                    <input id="new-desc" class="admin-input" placeholder="الوصف / المهام">
+                    <input type="file" id="new-img" class="admin-input" accept="image/*">
+                    <div style="display:flex; gap:10px; margin-top:10px;">
+                        <button class="btn btn-primary" onclick="addItemToFirebase('${colName}')">حفظ ونشر</button>
+                        <button class="btn btn-danger" onclick="document.getElementById('add-box').classList.add('hidden')">إلغاء</button>
+                    </div>
+                </div>
+
+                <div id="admin-list-items" style="margin-top:20px;">Loading...</div>
+            `;
+
+            const listContainer = document.getElementById('admin-list-items');
+            listContainer.innerHTML = '';
+            
+            const q = await getDocs(collection(db, colName));
+            q.forEach(docSnap => {
+                const d = docSnap.data();
+                listContainer.innerHTML += `
+                    <div style="background:white; padding:15px; border-radius:8px; margin-bottom:10px; display:flex; justify-content:space-between; align-items:center; box-shadow:0 2px 5px rgba(0,0,0,0.05);">
+                        <div style="display:flex; align-items:center; gap:10px;">
+                            ${d.img ? `<img src="${d.img}" style="width:40px; height:40px; border-radius:5px; object-fit:cover;">` : ''}
+                            <strong>${d.title || d.name || d.text}</strong>
+                        </div>
+                        <button class="btn btn-danger" onclick="deleteItem('${colName}', '${docSnap.id}')"><i class="fas fa-trash"></i></button>
+                    </div>
+                `;
             });
         }
 
-        function addFounder() {
-            const name = document.getElementById('nf-name').value;
-            const role = document.getElementById('nf-role').value;
-            const desc = document.getElementById('nf-desc').value;
-            const contact = document.getElementById('nf-contact').value;
-            const fileInput = document.getElementById('nf-img');
+        window.addItemToFirebase = function(colName) {
+            const title = document.getElementById('new-title').value;
+            const desc = document.getElementById('new-desc').value;
+            const file = document.getElementById('new-img').files[0];
 
-            if(!name) return alert("الاسم مطلوب");
+            if(!title) return alert("Required");
 
-            const save = (url) => {
-                db.founders.push({ name, role, desc, contact, img: url });
-                saveDB(); renderSite(); showTab('founders');
+            const save = async (imgUrl) => {
+                let obj = { title, desc, img: imgUrl };
+                if (colName === 'stats') obj = { num: title, text: desc, icon: 'fa-star' }; 
+                if (colName === 'founders') obj = { name: title, role: desc, desc: '', img: imgUrl };
+                
+                await addDoc(collection(db, colName), obj);
+                alert("تمت الإضافة");
+                switchTab(colName); // Refresh
             };
 
-            if(fileInput.files[0]) uploadImage(fileInput, save);
-            else save('');
-        }
-
-        function deleteFounder(idx) {
-            if(confirm('حذف؟')) { db.founders.splice(idx,1); saveDB(); renderSite(); showTab('founders'); }
-        }
-
-        // --- ADMIN: GENERIC LIST ---
-        function renderAdminList(type, container) {
-            container.innerHTML = `<h3>إدارة ${type === 'services' ? 'الخدمات' : 'المنتجات'}</h3>
-            <div style="background:#f0f0f0; padding:15px; border-radius:8px; margin-bottom:20px;">
-                <div class="form-group"><input type="text" id="ni-title" placeholder="العنوان"></div>
-                <div class="form-group"><input type="text" id="ni-desc" placeholder="الوصف"></div>
-                <div class="form-group"><input type="text" id="ni-link" placeholder="رابط خارجي (اختياري)"></div>
-                <div class="form-group"><input type="text" id="ni-info" placeholder="معلومات إضافية (هاتف/ايميل)"></div>
-                <div class="form-group"><label>صورة</label><input type="file" id="ni-img" accept="image/*"></div>
-                <button class="btn btn-primary" onclick="addGenericItem('${type}')">إضافة</button>
-            </div>`;
-
-            db[type].forEach((item, idx) => {
-                container.innerHTML += `<div style="display:flex; justify-content:space-between; background:white; padding:10px; border-bottom:1px solid #ddd;">
-                    <span>${item.title}</span>
-                    <button class="btn btn-danger" onclick="deleteGenericItem('${type}', ${idx})">حذف</button>
-                </div>`;
-            });
-        }
-
-        function addGenericItem(type) {
-            const title = document.getElementById('ni-title').value;
-            const desc = document.getElementById('ni-desc').value;
-            const link = document.getElementById('ni-link').value;
-            const info = document.getElementById('ni-info').value;
-            const fileInput = document.getElementById('ni-img');
-
-            if(!title) return alert("العنوان مطلوب");
-
-            const save = (url) => {
-                db[type].push({ title, desc, link, info, img: url });
-                saveDB(); renderSite(); showTab(type);
-            };
-
-            if(fileInput.files[0]) uploadImage(fileInput, save);
-            else save('');
-        }
-
-        function deleteGenericItem(type, idx) {
-            if(confirm('حذف؟')) { db[type].splice(idx,1); saveDB(); renderSite(); showTab(type); }
-        }
-
-        function deleteHeroImage(idx) {
-            if(confirm('حذف الصورة؟')) {
-                db.settings.heroImages.splice(idx, 1);
-                saveDB(); renderSite(); showTab('hero');
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (e) => save(e.target.result);
+                reader.readAsDataURL(file);
+            } else {
+                save(null);
             }
+        }
+
+        window.deleteItem = async function(colName, id) {
+            if(confirm("هل أنت متأكد من الحذف؟")) {
+                await deleteDoc(doc(db, colName, id));
+                switchTab(colName);
+            }
+        }
+
+        // --- LANGUAGE TOGGLE ---
+        window.toggleLanguage = function() {
+            window.currentLang = window.currentLang === 'ar' ? 'fr' : 'ar';
+            const lang = window.currentLang;
+            
+            document.getElementById('lang-text').innerText = lang === 'ar' ? 'Français' : 'العربية';
+            document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+            
+            document.querySelectorAll('[data-key]').forEach(el => {
+                const key = el.getAttribute('data-key');
+                if (translations[lang][key]) {
+                    el.innerText = translations[lang][key];
+                }
+            });
         }
 
         // --- UTILS ---
-        function uploadImage(input, callback) {
-            if (input.files && input.files[0]) {
-                var reader = new FileReader();
-                reader.onload = function(e) { callback(e.target.result); }
-                reader.readAsDataURL(input.files[0]);
-            }
+        window.toggleMenu = function() {
+            document.getElementById('side-menu').classList.toggle('active');
+            const overlay = document.getElementById('overlay');
+            overlay.style.display = overlay.style.display === 'block' ? 'none' : 'block';
+        }
+        
+        window.openLoginModal = function() {
+            toggleMenu();
+            document.getElementById('login-modal').style.display = 'flex';
         }
 
-        // --- INIT ---
-        window.onload = renderSite;
+        // Start
+        loadSiteData();
 
     </script>
 </body>
