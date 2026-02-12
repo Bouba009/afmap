@@ -1,11 +1,10 @@
-</html><!DOCTYPE html>
+, <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AFMAP - المؤسسة الجزائرية للنباتات الطبية</title>
     
-    <!-- الخطوط والأيقونات -->
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
@@ -28,7 +27,6 @@
         .fade-in { animation: fadeIn 0.8s ease-in-out; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* --- Glowing Event Animation --- */
         @keyframes glowing {
             0% { box-shadow: 0 0 5px var(--accent); }
             50% { box-shadow: 0 0 20px var(--accent), 0 0 10px #ffd54f; }
@@ -67,7 +65,6 @@
             background: white; z-index: 1002; transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1); padding: 20px;
             display: flex; flex-direction: column; box-shadow: 0 0 20px rgba(0,0,0,0.2);
         }
-        /* RTL support for sidebar */
         html[dir="rtl"] .side-menu { right: -300px; border-left: 5px solid var(--primary); }
         html[dir="rtl"] .side-menu.active { right: 0; }
         html[dir="ltr"] .side-menu { left: -300px; border-right: 5px solid var(--primary); }
@@ -79,7 +76,7 @@
         }
         .side-link:hover { background: #e8f5e9; color: var(--primary); padding-inline-start: 20px; }
 
-        /* --- Hero Section --- */
+        /* --- Hero --- */
         .hero {
             height: 85vh; position: relative; display: flex; align-items: center; justify-content: center;
             text-align: center; color: white; background-size: cover; background-position: center;
@@ -95,7 +92,7 @@
             font-weight: 900; letter-spacing: 1px; font-size: 1rem;
         }
         
-        /* --- Stats Bar --- */
+        /* --- Stats --- */
         .stats-bar { 
             background: var(--primary); padding: 40px 5%; color: white; margin-top: -50px; position: relative; z-index: 10;
             border-radius: 30px 30px 0 0; display: flex; flex-wrap: wrap; justify-content: space-around; gap: 30px;
@@ -105,7 +102,7 @@
         .stat-item i { font-size: 2.5rem; margin-bottom: 10px; color: var(--accent); }
         .stat-num { font-size: 2rem; font-weight: 900; display: block; }
 
-        /* --- Grid Layouts --- */
+        /* --- Grid --- */
         .section-container { padding: 60px 5%; }
         .section-title { text-align: center; margin-bottom: 50px; color: var(--dark); font-size: 2.2rem; position: relative; }
         .section-title::after { content: ''; display: block; width: 80px; height: 4px; background: var(--accent); margin: 15px auto; border-radius: 2px; }
@@ -121,49 +118,46 @@
         .card-body { padding: 20px; flex: 1; display: flex; flex-direction: column; }
         .card h3 { color: var(--primary); font-size: 1.2rem; margin-bottom: 10px; }
         .card p { color: #666; line-height: 1.6; font-size: 0.95rem; flex: 1; }
-        .card-meta { margin-top: 15px; padding-top: 15px; border-top: 1px solid #f0f0f0; display: flex; justify-content: space-between; font-size: 0.9rem; }
-        .card-btn { background: var(--secondary); color: white; padding: 5px 15px; border-radius: 4px; text-decoration: none; font-size: 0.8rem; cursor: pointer;}
+        .card-btn { 
+            background: var(--secondary); color: white; padding: 8px 15px; 
+            border-radius: 4px; text-decoration: none; font-size: 0.9rem; 
+            margin-top: 15px; text-align: center; display: inline-block; cursor: pointer;
+        }
+        .card-btn:hover { background: var(--primary); }
 
         /* --- Footer --- */
         footer { background: #1a1a1a; color: #ccc; padding: 50px 20px; text-align: center; margin-top: 50px; border-top: 5px solid var(--accent); }
+        .footer-links { display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; margin-bottom: 20px; }
+        .footer-links a { color: #fff; text-decoration: none; font-weight: bold; transition: 0.3s; border-bottom: 1px solid transparent; }
+        .footer-links a:hover { color: var(--accent); border-bottom-color: var(--accent); }
 
-        /* ================== ADMIN DASHBOARD (Professional) ================== */
+        /* --- Admin & Modals --- */
         .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 2000; display: none; justify-content: center; align-items: center; padding: 20px; backdrop-filter: blur(5px); }
+        
+        /* Privacy Modal Specific */
+        .privacy-content { background: white; width: 100%; max-width: 600px; padding: 30px; border-radius: 10px; max-height: 80vh; overflow-y: auto; text-align: start; }
+
         .dashboard-container { 
             background: var(--dashboard-bg); width: 95vw; height: 95vh; border-radius: 15px; overflow: hidden; display: flex; 
             box-shadow: 0 20px 50px rgba(0,0,0,0.5);
         }
-        
         .dash-sidebar { width: 250px; background: #2c3e50; color: white; display: flex; flex-direction: column; padding: 20px 0; }
         .dash-sidebar h3 { text-align: center; margin-bottom: 30px; color: var(--accent); border-bottom: 1px solid #34495e; padding-bottom: 20px; }
-        .dash-nav-btn { 
-            padding: 15px 25px; border: none; background: none; color: #ecf0f1; text-align: start; cursor: pointer; 
-            transition: 0.3s; display: flex; align-items: center; gap: 10px; font-size: 1rem;
-        }
+        .dash-nav-btn { padding: 15px 25px; border: none; background: none; color: #ecf0f1; text-align: start; cursor: pointer; transition: 0.3s; display: flex; align-items: center; gap: 10px; font-size: 1rem; }
         .dash-nav-btn:hover, .dash-nav-btn.active { background: var(--primary); color: white; border-left: 5px solid var(--accent); }
-        
         .dash-content { flex: 1; padding: 30px; overflow-y: auto; }
         
-        /* Stats Cards in Dashboard */
         .dash-stats-row { display: flex; gap: 20px; margin-bottom: 30px; }
-        .dash-stat-card { 
-            flex: 1; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); 
-            display: flex; align-items: center; justify-content: space-between;
-        }
+        .dash-stat-card { flex: 1; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); display: flex; align-items: center; justify-content: space-between; }
         .dash-stat-num { font-size: 2rem; font-weight: bold; color: var(--dark); }
-        .dash-stat-label { color: #7f8c8d; font-size: 0.9rem; }
-        .dash-stat-icon { font-size: 2.5rem; color: var(--secondary); opacity: 0.3; }
-
-        /* Forms */
+        
         .admin-form-group { margin-bottom: 20px; background: white; padding: 15px; border-radius: 8px; border: 1px solid #e0e0e0; }
         .admin-input { width: 100%; padding: 10px; margin-top: 5px; border: 1px solid #ccc; border-radius: 5px; }
         .btn { padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; color: white; transition: 0.3s; }
         .btn-primary { background: var(--primary); }
         .btn-danger { background: #e74c3c; }
         .btn-success { background: #27ae60; }
-        .btn:hover { opacity: 0.9; transform: translateY(-2px); }
 
-        /* --- Helper Classes --- */
         .hidden { display: none; }
     </style>
 </head>
@@ -212,7 +206,6 @@
 
     <!-- Stats -->
     <div class="stats-bar" id="stats-display">
-        <!-- Stats Loaded from Firebase -->
         <div style="text-align:center; width:100%;">Loading Stats...</div>
     </div>
 
@@ -240,20 +233,41 @@
         <div class="founders-grid" id="founders-grid"></div>
     </section>
 
-    <!-- Contact -->
+    <!-- Contact & Location -->
     <section class="section-container" style="background: #2e7d32; color: white;" id="contact">
         <h2 class="section-title" style="color: white; border-color: white;" data-key="sec_contact">اتصل بنا</h2>
         <div style="text-align: center; font-size:1.2rem;">
             <p><i class="fas fa-phone"></i> <span id="contact-phone">...</span></p>
             <p style="margin-top:10px;"><i class="fas fa-envelope"></i> <span id="contact-email">...</span></p>
+            <p style="margin-top:10px;"><i class="fas fa-map-marker-alt"></i> الجزائر، العاصمة (Rouiba)</p>
         </div>
     </section>
 
+    <!-- Footer with New Links -->
     <footer>
+        <div class="footer-links">
+            <a href="#about" data-key="ft_about">من نحن</a>
+            <a href="#" onclick="document.getElementById('privacy-modal').style.display='flex'" data-key="ft_privacy">سياسة الخصوصية</a>
+            <a href="#contact" data-key="ft_location">موقعنا</a>
+        </div>
         <p>AFMAP &copy; 2026. All Rights Reserved.</p>
     </footer>
 
-    <!-- ================== ADMIN MODALS ================== -->
+    <!-- ================== MODALS ================== -->
+
+    <!-- Privacy Policy Modal -->
+    <div class="modal" id="privacy-modal">
+        <div class="privacy-content">
+            <h2 style="color:var(--primary); margin-bottom:20px;">سياسة الخصوصية</h2>
+            <p>نحن في المؤسسة الجزائرية للنباتات الطبية (AFMAP) نلتزم بحماية خصوصية زوارنا.</p>
+            <ul style="margin:20px 0; padding-inline-start:20px;">
+                <li>نحن لا نجمع معلومات شخصية دون إذنك.</li>
+                <li>يتم استخدام الكوكيز لتحسين تجربة المستخدم فقط.</li>
+                <li>جميع البيانات المسجلة محمية وآمنة.</li>
+            </ul>
+            <button class="btn btn-primary" onclick="document.getElementById('privacy-modal').style.display='none'">إغلاق</button>
+        </div>
+    </div>
 
     <!-- Login -->
     <div class="modal" id="login-modal">
@@ -290,16 +304,12 @@
         </div>
     </div>
 
-    <!-- Firebase SDKs & Logic -->
     <script type="module">
-        // Import Functions from CDN
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
         import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-analytics.js";
         import { getFirestore, doc, getDoc, setDoc, updateDoc, collection, getDocs, addDoc, deleteDoc, increment } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
-        // ==========================================================
-        //  إعدادات FIREBASE الخاصة بك (تم دمجها بنجاح)
-        // ==========================================================
+        // Firebase Config (Your specific ID)
         const firebaseConfig = {
             apiKey: "AIzaSyAaXp-gUOQ_G2s-kM8JhaqW8TJcJ4Nqcuo",
             authDomain: "comondi-fae4b.firebaseapp.com",
@@ -310,53 +320,48 @@
             measurementId: "G-M09RX0V18S"
         };
 
-        // Initialize Firebase
         const app = initializeApp(firebaseConfig);
-        const analytics = getAnalytics(app); // Analytics started
-        const db = getFirestore(app); // Database started
+        const analytics = getAnalytics(app);
+        const db = getFirestore(app);
 
         // --- GLOBAL VARIABLES ---
         window.currentLang = 'ar';
+        // Settings cache to handle event text switching smoothly
+        window.siteSettings = {}; 
+
         const translations = {
             ar: {
                 nav_home: "الرئيسية", nav_services: "الخدمات", nav_products: "المنتجات", nav_blog: "المدونة", nav_founders: "المؤسسين", nav_contact: "اتصل بنا",
                 sec_services: "خدماتنا", sec_products: "منتجاتنا", sec_blog: "المدونة", sec_founders: "المؤسسين", sec_contact: "اتصل بنا",
-                header_subtitle: "المؤسسة الجزائرية للنباتات الطبية"
+                header_subtitle: "المؤسسة الجزائرية للنباتات الطبية",
+                ft_about: "من نحن", ft_privacy: "سياسة الخصوصية", ft_location: "موقعنا",
+                btn_readmore: "اقرأ المزيد", btn_link: "رابط خارجي"
             },
             fr: {
                 nav_home: "Accueil", nav_services: "Services", nav_products: "Produits", nav_blog: "Blog", nav_founders: "Fondateurs", nav_contact: "Contact",
                 sec_services: "Nos Services", sec_products: "Nos Produits", sec_blog: "Notre Blog", sec_founders: "Fondateurs", sec_contact: "Contactez-nous",
-                header_subtitle: "Fondation Algérienne des Plantes Médicinales"
+                header_subtitle: "Fondation Algérienne des Plantes Médicinales",
+                ft_about: "Qui sommes-nous", ft_privacy: "Politique de Confidentialité", ft_location: "Localisation",
+                btn_readmore: "Lire la suite", btn_link: "Lien externe"
             }
         };
 
         // --- MAIN FUNCTIONS ---
-
-        // 1. Load Data on Start
         async function loadSiteData() {
-            // Track Visit
             trackVisit();
-
-            // Load Hero & Settings
             try {
                 const settingsSnap = await getDoc(doc(db, "site_content", "settings"));
                 if (settingsSnap.exists()) {
-                    const data = settingsSnap.data();
-                    renderHero(data);
-                    renderContact(data);
-                    window.heroImages = data.heroImages || [];
+                    window.siteSettings = settingsSnap.data();
+                    renderHero(window.siteSettings);
+                    renderContact(window.siteSettings);
+                    window.heroImages = window.siteSettings.heroImages || [];
                     startSlider();
                 } else {
-                    // Initialize default data if db is empty
-                    console.log("No settings found, please login to admin to set up.");
                     document.getElementById('hero-title').innerText = "AFMAP";
                 }
-            } catch (error) {
-                console.error("Error loading settings:", error);
-                document.getElementById('hero-title').innerText = "Error Loading Data (Check Firestore Rules)";
-            }
+            } catch (error) { console.error(error); }
 
-            // Load Collections
             renderCollection("stats", "stats-display");
             renderCollection("services", "services-grid");
             renderCollection("products", "products-grid");
@@ -364,11 +369,12 @@
             renderCollection("founders", "founders-grid");
         }
 
-        // 2. Render Logic
         function renderHero(data) {
             document.getElementById('hero-title').innerText = data.heroTitle || "AFMAP";
             document.getElementById('hero-desc').innerText = data.heroDesc || "";
-            document.getElementById('hero-event-text').innerText = data.eventText || "No Events";
+            // Render Event Text based on current language
+            const eventText = window.currentLang === 'ar' ? (data.eventTextAr || data.eventText) : (data.eventTextFr || data.eventText);
+            document.getElementById('hero-event-text').innerText = eventText || "No Event";
         }
 
         function renderContact(data) {
@@ -378,13 +384,12 @@
 
         async function renderCollection(colName, elId) {
             const container = document.getElementById(elId);
-            container.innerHTML = ''; // Clear
+            container.innerHTML = ''; 
             try {
                 const querySnapshot = await getDocs(collection(db, colName));
-                
                 querySnapshot.forEach((doc) => {
                     const item = doc.data();
-                    const id = doc.id;
+                    const btnText = window.currentLang === 'ar' ? translations.ar.btn_readmore : translations.fr.btn_readmore;
                     
                     if (colName === 'stats') {
                         container.innerHTML += `
@@ -404,30 +409,26 @@
                                 </div>
                             </div>`;
                     } else {
-                        // Products, Services, Blog
+                        // Added Optional Link Button here
                         container.innerHTML += `
                             <div class="card fade-in">
                                 <img src="${item.img || 'https://via.placeholder.com/300'}" class="card-img">
                                 <div class="card-body">
                                     <h3>${item.title}</h3>
                                     <p>${item.desc}</p>
-                                    ${item.link ? `<a href="${item.link}" target="_blank" class="card-btn">اقرأ المزيد</a>` : ''}
+                                    ${item.link ? `<a href="${item.link}" target="_blank" class="card-btn">${item.linkText || btnText} <i class="fas fa-external-link-alt"></i></a>` : ''}
                                 </div>
                             </div>`;
                     }
                 });
-            } catch (e) {
-                console.log("Collection empty or permission denied: " + colName);
-            }
+            } catch (e) { }
         }
 
-        // 3. Slider
         function startSlider() {
             if(!window.heroImages || window.heroImages.length === 0) return;
             let idx = 0;
             const heroEl = document.getElementById('hero');
             heroEl.style.backgroundImage = `url('${window.heroImages[0]}')`;
-            
             if(window.heroImages.length > 1) {
                 setInterval(() => {
                     idx = (idx + 1) % window.heroImages.length;
@@ -436,160 +437,120 @@
             }
         }
 
-        // 4. Visitor Tracking (Firestore)
         async function trackVisit() {
             const today = new Date().toLocaleDateString();
-            const lastVisit = localStorage.getItem('last_visit');
-            
-            if (lastVisit !== today) {
+            if (localStorage.getItem('last_visit') !== today) {
                 const statsRef = doc(db, "analytics", "visitors");
                 try {
-                    await updateDoc(statsRef, {
-                        daily: increment(1),
-                        monthly: increment(1)
-                    });
-                } catch (err) {
-                    // Create if not exists
-                    await setDoc(statsRef, { daily: 1, monthly: 1 });
-                }
+                    await updateDoc(statsRef, { daily: increment(1), monthly: increment(1) });
+                } catch (err) { await setDoc(statsRef, { daily: 1, monthly: 1 }); }
                 localStorage.setItem('last_visit', today);
             }
         }
 
         // --- ADMIN FUNCTIONS ---
         window.checkLogin = function() {
-            const pass = document.getElementById('admin-pass').value;
-            if (pass === "abobob123") { // Simple protection
+            if (document.getElementById('admin-pass').value === "abobob123") {
                 document.getElementById('login-modal').style.display = 'none';
                 document.getElementById('dashboard-modal').style.display = 'flex';
                 switchTab('home');
-            } else {
-                alert("Wrong Password");
-            }
+            } else { alert("Wrong Password"); }
         }
 
         window.switchTab = async function(tab) {
-            // Update UI
             document.querySelectorAll('.dash-nav-btn').forEach(b => b.classList.remove('active'));
             event.target.classList.add('active');
-            
             const content = document.getElementById('dash-content');
             content.innerHTML = '<div style="text-align:center; padding:50px;"><i class="fas fa-spinner fa-spin fa-3x"></i></div>';
 
             if (tab === 'home') {
-                // Get Stats
                 let visits = { daily:0, monthly:0 };
-                try {
-                    const analyticsSnap = await getDoc(doc(db, "analytics", "visitors"));
-                    if(analyticsSnap.exists()) visits = analyticsSnap.data();
-                } catch(e) {}
-                
+                try { const snap = await getDoc(doc(db, "analytics", "visitors")); if(snap.exists()) visits = snap.data(); } catch(e){}
                 content.innerHTML = `
                     <h2>لوحة التحكم / نظرة عامة</h2>
                     <div class="dash-stats-row">
-                        <div class="dash-stat-card">
-                            <div><div class="dash-stat-num">${visits.daily}</div><div class="dash-stat-label">زيارات اليوم</div></div>
-                            <i class="fas fa-users dash-stat-icon"></i>
-                        </div>
-                        <div class="dash-stat-card">
-                            <div><div class="dash-stat-num">${visits.monthly}</div><div class="dash-stat-label">زيارات الشهر</div></div>
-                            <i class="fas fa-calendar-alt dash-stat-icon"></i>
-                        </div>
-                    </div>
-                    <div style="background:white; padding:20px; border-radius:10px;">
-                        <h4>حالة النظام</h4>
-                        <p style="color:green;"><i class="fas fa-check-circle"></i> قاعدة البيانات متصلة (Firebase)</p>
-                        <p style="color:#666; font-size:0.9rem; margin-top:10px;">Project ID: comondi-fae4b</p>
-                    </div>
-                `;
+                        <div class="dash-stat-card"><div><div class="dash-stat-num">${visits.daily}</div><div>زيارات اليوم</div></div><i class="fas fa-users dash-stat-icon"></i></div>
+                        <div class="dash-stat-card"><div><div class="dash-stat-num">${visits.monthly}</div><div>زيارات الشهر</div></div><i class="fas fa-calendar-alt dash-stat-icon"></i></div>
+                    </div>`;
             } else if (tab === 'hero') {
                 const snap = await getDoc(doc(db, "site_content", "settings"));
                 const data = snap.exists() ? snap.data() : {};
                 
+                // Added Dual Language Event Fields
                 content.innerHTML = `
                     <h2>تعديل الواجهة</h2>
                     <div class="admin-form-group">
-                        <label>العنوان الرئيسي</label>
-                        <input id="in-hero-title" class="admin-input" value="${data.heroTitle || ''}">
-                        <label>الوصف</label>
-                        <input id="in-hero-desc" class="admin-input" value="${data.heroDesc || ''}">
-                        <label>نص الحدث (Event)</label>
-                        <input id="in-event" class="admin-input" value="${data.eventText || ''}">
-                        <label>الهاتف</label>
-                        <input id="in-phone" class="admin-input" value="${data.phone || ''}">
-                        <label>الايميل</label>
-                        <input id="in-email" class="admin-input" value="${data.email || ''}">
+                        <label>العنوان الرئيسي</label><input id="in-hero-title" class="admin-input" value="${data.heroTitle || ''}">
+                        <label>الوصف</label><input id="in-hero-desc" class="admin-input" value="${data.heroDesc || ''}">
+                        
+                        <div style="display:flex; gap:10px; margin-top:10px;">
+                            <div style="flex:1"><label>نص الحدث (عربي)</label><input id="in-event-ar" class="admin-input" value="${data.eventTextAr || ''}" placeholder="حدث قادم..."></div>
+                            <div style="flex:1"><label>نص الحدث (فرنسي)</label><input id="in-event-fr" class="admin-input" value="${data.eventTextFr || ''}" placeholder="Prochain événement..."></div>
+                        </div>
+
+                        <label>الهاتف</label><input id="in-phone" class="admin-input" value="${data.phone || ''}">
+                        <label>الايميل</label><input id="in-email" class="admin-input" value="${data.email || ''}">
                         <button class="btn btn-primary" style="margin-top:10px;" onclick="saveSettings()">حفظ التغييرات</button>
                     </div>
                     <div class="admin-form-group">
                         <label>إضافة صورة خلفية</label>
                         <input type="file" id="hero-file-in" accept="image/*" class="admin-input">
                         <button class="btn btn-success" style="margin-top:5px;" onclick="uploadHeroImage()">رفع الصورة</button>
-                        <div style="margin-top:10px; font-size:0.8rem; color:red;">* صور أقل من 1MB فقط</div>
-                    </div>
-                `;
+                    </div>`;
             } else {
-                // Generic List (Services, Products, etc.)
                 renderAdminList(tab, content);
             }
         }
 
-        // Save Settings to Firebase
         window.saveSettings = async function() {
             await setDoc(doc(db, "site_content", "settings"), {
                 heroTitle: document.getElementById('in-hero-title').value,
                 heroDesc: document.getElementById('in-hero-desc').value,
-                eventText: document.getElementById('in-event').value,
+                eventTextAr: document.getElementById('in-event-ar').value, // Save Arabic
+                eventTextFr: document.getElementById('in-event-fr').value, // Save French
+                eventText: document.getElementById('in-event-ar').value, // Fallback
                 phone: document.getElementById('in-phone').value,
                 email: document.getElementById('in-email').value
             }, { merge: true });
             alert("تم الحفظ!");
-            loadSiteData(); // Refresh View
+            loadSiteData();
         }
 
-        // Upload Hero Image (Base64 -> Firebase Array)
         window.uploadHeroImage = function() {
             const file = document.getElementById('hero-file-in').files[0];
             if (!file) return;
             const reader = new FileReader();
             reader.onload = async function(e) {
-                const base64 = e.target.result;
                 const snap = await getDoc(doc(db, "site_content", "settings"));
-                let currentImgs = (snap.exists() && snap.data().heroImages) ? snap.data().heroImages : [];
-                currentImgs.push(base64);
-                
-                await setDoc(doc(db, "site_content", "settings"), { heroImages: currentImgs }, { merge: true });
+                let imgs = (snap.exists() && snap.data().heroImages) ? snap.data().heroImages : [];
+                imgs.push(e.target.result);
+                await setDoc(doc(db, "site_content", "settings"), { heroImages: imgs }, { merge: true });
                 alert("تم رفع الصورة!");
             };
             reader.readAsDataURL(file);
         }
 
-        // Render Admin Lists (CRUD)
         async function renderAdminList(colName, container) {
+            // Added Optional Link Input in Admin
             container.innerHTML = `
                 <div style="display:flex; justify-content:space-between; align-items:center;">
                     <h2>إدارة ${colName}</h2>
                     <button class="btn btn-success" onclick="document.getElementById('add-box').classList.remove('hidden')">+ إضافة جديد</button>
                 </div>
-                
-                <!-- Add Form -->
                 <div id="add-box" class="admin-form-group hidden" style="border:2px solid var(--primary);">
                     <h4>إضافة عنصر جديد</h4>
                     <input id="new-title" class="admin-input" placeholder="العنوان / الاسم">
                     <input id="new-desc" class="admin-input" placeholder="الوصف / المهام">
+                    <input id="new-link" class="admin-input" placeholder="رابط تحويل (اختياري - http://...)">
                     <input type="file" id="new-img" class="admin-input" accept="image/*">
                     <div style="display:flex; gap:10px; margin-top:10px;">
                         <button class="btn btn-primary" onclick="addItemToFirebase('${colName}')">حفظ ونشر</button>
                         <button class="btn btn-danger" onclick="document.getElementById('add-box').classList.add('hidden')">إلغاء</button>
                     </div>
                 </div>
-
-                <div id="admin-list-items" style="margin-top:20px;">Loading...</div>
-            `;
+                <div id="admin-list-items" style="margin-top:20px;"></div>`;
 
             const listContainer = document.getElementById('admin-list-items');
-            listContainer.innerHTML = '';
-            
             const q = await getDocs(collection(db, colName));
             q.forEach(docSnap => {
                 const d = docSnap.data();
@@ -600,45 +561,36 @@
                             <strong>${d.title || d.name || d.text}</strong>
                         </div>
                         <button class="btn btn-danger" onclick="deleteItem('${colName}', '${docSnap.id}')"><i class="fas fa-trash"></i></button>
-                    </div>
-                `;
+                    </div>`;
             });
         }
 
         window.addItemToFirebase = function(colName) {
             const title = document.getElementById('new-title').value;
             const desc = document.getElementById('new-desc').value;
+            const link = document.getElementById('new-link').value; // Get Link
             const file = document.getElementById('new-img').files[0];
-
             if(!title) return alert("Required");
 
             const save = async (imgUrl) => {
-                let obj = { title, desc, img: imgUrl };
-                if (colName === 'stats') obj = { num: title, text: desc, icon: 'fa-star' }; 
+                let obj = { title, desc, link, img: imgUrl };
+                if (colName === 'stats') obj = { num: title, text: desc, icon: 'fa-star' };
                 if (colName === 'founders') obj = { name: title, role: desc, desc: '', img: imgUrl };
-                
                 await addDoc(collection(db, colName), obj);
                 alert("تمت الإضافة");
-                switchTab(colName); // Refresh
+                switchTab(colName);
             };
-
             if (file) {
                 const reader = new FileReader();
                 reader.onload = (e) => save(e.target.result);
                 reader.readAsDataURL(file);
-            } else {
-                save(null);
-            }
+            } else { save(null); }
         }
 
         window.deleteItem = async function(colName, id) {
-            if(confirm("هل أنت متأكد من الحذف؟")) {
-                await deleteDoc(doc(db, colName, id));
-                switchTab(colName);
-            }
+            if(confirm("حذف؟")) { await deleteDoc(doc(db, colName, id)); switchTab(colName); }
         }
 
-        // --- LANGUAGE TOGGLE ---
         window.toggleLanguage = function() {
             window.currentLang = window.currentLang === 'ar' ? 'fr' : 'ar';
             const lang = window.currentLang;
@@ -648,27 +600,27 @@
             
             document.querySelectorAll('[data-key]').forEach(el => {
                 const key = el.getAttribute('data-key');
-                if (translations[lang][key]) {
-                    el.innerText = translations[lang][key];
-                }
+                if (translations[lang][key]) el.innerText = translations[lang][key];
             });
+
+            // Update Event Text Dynamically
+            if (window.siteSettings) {
+                renderHero(window.siteSettings);
+                // Force re-render grid buttons to update text
+                renderCollection("services", "services-grid");
+                renderCollection("products", "products-grid");
+                renderCollection("blog", "blog-grid");
+            }
         }
 
-        // --- UTILS ---
         window.toggleMenu = function() {
             document.getElementById('side-menu').classList.toggle('active');
             const overlay = document.getElementById('overlay');
             overlay.style.display = overlay.style.display === 'block' ? 'none' : 'block';
         }
+        window.openLoginModal = function() { toggleMenu(); document.getElementById('login-modal').style.display = 'flex'; }
         
-        window.openLoginModal = function() {
-            toggleMenu();
-            document.getElementById('login-modal').style.display = 'flex';
-        }
-
-        // Start
         loadSiteData();
-
     </script>
 </body>
-</html>
+</html>: "
