@@ -75,7 +75,7 @@
             backdrop-filter: blur(10px);
         }
         .logo-container { display: flex; align-items: center; gap: 10px; }
-        .logo-container img { height: 50px; }
+        .logo-container img { height: 50px; object-fit: contain; }
         .menu-btn { font-size: 1.5rem; color: var(--primary); cursor: pointer; border: none; background: none; }
 
         /* --- Sidebar --- */
@@ -164,6 +164,7 @@
         .btn-primary { background: var(--primary); }
         .btn-danger { background: #e74c3c; }
         .btn-success { background: #27ae60; }
+        .btn-warning { background: var(--accent); color: black; }
         .hidden { display: none; }
         
         /* New Style for Admin Image List */
@@ -171,6 +172,15 @@
         .admin-img-item { position: relative; width: 80px; height: 60px; }
         .admin-img-item img { width: 100%; height: 100%; object-fit: cover; border-radius: 5px; }
         .admin-img-del { position: absolute; top: -5px; right: -5px; background: red; color: white; width: 20px; height: 20px; border-radius: 50%; text-align: center; line-height: 20px; cursor: pointer; font-size: 12px; font-weight: bold; }
+
+        /* Multi-lang Input Group */
+        .lang-group { display: flex; gap: 10px; margin-bottom: 10px; }
+        .lang-group div { flex: 1; }
+        .lang-label { font-size: 0.8rem; color: #666; font-weight: bold; display: block; margin-bottom: 2px; }
+        
+        /* Order Controls */
+        .order-btn { background: #ddd; border: none; padding: 5px 10px; cursor: pointer; border-radius: 3px; font-size: 12px; }
+        .order-btn:hover { background: #ccc; }
     </style>
 </head>
 <body>
@@ -188,7 +198,8 @@
 
     <!-- Header -->
     <header>
-        <div class="logo-container">
+        <div class="logo-container" id="header-logo">
+             <!-- Logo Injected Here -->
              <div style="font-size:2rem; color:var(--primary);"><i class="fas fa-leaf"></i></div>
              <div>
                  <h2 style="color: var(--primary); line-height:1;">AFMAP</h2>
@@ -215,7 +226,6 @@
     <section class="hero" id="hero">
         <div class="hero-content fade-in">
             <div class="event-wrapper">
-                <!-- Changed to Anchor Tag for Link Support -->
                 <a href="#" id="hero-event-link" class="event-badge event-glow" target="_blank">Loading Event...</a>
             </div>
             <h1 id="hero-title"></h1>
@@ -256,7 +266,7 @@
         <div style="text-align: center; font-size:1.2rem;">
             <p><i class="fas fa-phone"></i> <span id="contact-phone"></span></p>
             <p style="margin-top:10px;"><i class="fas fa-envelope"></i> <span id="contact-email"></span></p>
-            <p style="margin-top:10px;"><i class="fas fa-map-marker-alt"></i> الجزائر، العاصمة (Rouiba)</p>
+            <p style="margin-top:10px;"><i class="fas fa-map-marker-alt"></i> <span id="contact-loc">Rouiba, Alger</span></p>
         </div>
     </section>
 
@@ -345,6 +355,13 @@
                 header_subtitle: "Fondation Algérienne des Plantes Médicinales",
                 ft_about: "Qui sommes-nous", ft_privacy: "Politique de Confidentialité", ft_location: "Localisation",
                 btn_readmore: "Lire la suite", btn_link: "Lien externe"
+            },
+            en: {
+                nav_home: "Home", nav_services: "Services", nav_products: "Products", nav_blog: "Blog", nav_founders: "Founders", nav_contact: "Contact",
+                sec_services: "Our Services", sec_products: "Our Products", sec_blog: "Our Blog", sec_founders: "Founders", sec_contact: "Contact Us",
+                header_subtitle: "Algerian Foundation for Medicinal Plants",
+                ft_about: "About Us", ft_privacy: "Privacy Policy", ft_location: "Location",
+                btn_readmore: "Read More", btn_link: "External Link"
             }
         };
 
@@ -355,6 +372,7 @@
                 const data = JSON.parse(cachedSettings);
                 window.siteSettings = data;
                 renderHero(data);
+                renderHeader(data); // NEW: Render Logo
                 renderContact(data);
                 window.heroImages = data.heroImages || [];
                 startSlider();
@@ -376,6 +394,7 @@
                     localStorage.setItem('afmap_settings', JSON.stringify(data));
                     window.siteSettings = data;
                     renderHero(data);
+                    renderHeader(data); // NEW: Render Logo
                     renderContact(data);
                     window.heroImages = data.heroImages || [];
                     startSlider();
@@ -385,7 +404,10 @@
             ['stats', 'services', 'products', 'blog', 'founders'].forEach(async col => {
                 const q = await getDocs(collection(db, col));
                 let items = [];
-                q.forEach(doc => items.push(doc.data()));
+                q.forEach(doc => items.push({ id: doc.id, ...doc.data() }));
+                // Sort by Order if exists, else ID
+                items.sort((a, b) => (a.order || 0) - (b.order || 0));
+                
                 localStorage.setItem('afmap_' + col, JSON.stringify(items));
                 renderListUI(col, items);
             });
@@ -396,17 +418,33 @@
             }, 1000);
         }
 
+        // --- HELPER: Get Multilang Text ---
+        function getLangText(item, field) {
+            const lang = window.currentLang;
+            if (lang === 'ar' && item[field + '_ar']) return item[field + '_ar'];
+            if (lang === 'fr' && item[field + '_fr']) return item[field + '_fr'];
+            if (lang === 'en' && item[field + '_en']) return item[field + '_en'];
+            return item[field] || ""; // Fallback
+        }
+
         // --- RENDER LOGIC ---
+        function renderHeader(data) {
+            if (data.logo) {
+                document.getElementById('header-logo').innerHTML = `<img src="${data.logo}" style="height:50px;">`;
+            } else {
+                // Default
+                document.getElementById('header-logo').innerHTML = `<div style="font-size:2rem; color:var(--primary);"><i class="fas fa-leaf"></i></div><div><h2 style="color: var(--primary); line-height:1;">AFMAP</h2><small style="font-size:0.7rem; color:#666;" data-key="header_subtitle">Medicinal Plants</small></div>`;
+            }
+        }
+
         function renderHero(data) {
-            document.getElementById('hero-title').innerText = data.heroTitle || "";
-            document.getElementById('hero-desc').innerText = data.heroDesc || "";
+            document.getElementById('hero-title').innerText = getLangText(data, 'heroTitle');
+            document.getElementById('hero-desc').innerText = getLangText(data, 'heroDesc');
             
             const eventLinkEl = document.getElementById('hero-event-link');
-            const eventText = window.currentLang === 'ar' ? (data.eventTextAr || data.eventText) : (data.eventTextFr || data.eventText);
+            const eventText = getLangText(data, 'eventText');
             
             eventLinkEl.innerText = eventText || "";
-            
-            // Handle Event Link
             if (data.eventLink && data.eventLink.trim() !== "") {
                 eventLinkEl.href = data.eventLink;
                 eventLinkEl.style.cursor = "pointer";
@@ -419,6 +457,7 @@
         function renderContact(data) {
             document.getElementById('contact-phone').innerText = data.phone || "";
             document.getElementById('contact-email').innerText = data.email || "";
+            // We can add lang support for address if needed later
         }
 
         function renderListUI(colName, items) {
@@ -427,23 +466,30 @@
             container.innerHTML = '';
             
             items.forEach(item => {
-                const btnText = window.currentLang === 'ar' ? translations.ar.btn_readmore : translations.fr.btn_readmore;
-                
+                const title = getLangText(item, colName === 'founders' ? 'name' : 'title');
+                const desc = getLangText(item, colName === 'founders' ? 'role' : 'desc');
+                const btnText = translations[window.currentLang].btn_readmore;
+
                 if (colName === 'stats') {
                     container.innerHTML += `
                         <div class="stat-item fade-in">
                             <i class="fas ${item.icon}"></i>
                             <span class="stat-num">${item.num}</span>
-                            <span>${item.text}</span>
+                            <span>${title}</span>
                         </div>`;
                 } else if (colName === 'founders') {
+                    // Added Contact Info
+                    let contactHTML = "";
+                    if (item.contact) {
+                        contactHTML = `<div style="margin-top:10px; font-size:0.9rem; color:#555;"><i class="fas fa-envelope-open-text"></i> ${item.contact}</div>`;
+                    }
                     container.innerHTML += `
                         <div class="card fade-in" style="align-items:center; text-align:center;">
                             <img src="${item.img || 'https://via.placeholder.com/150'}" style="width:120px; height:120px; border-radius:50%; margin-top:20px; border:3px solid var(--primary); object-fit: cover;">
                             <div class="card-body">
-                                <h3>${item.name}</h3>
-                                <div style="color:var(--primary); font-weight:bold;">${item.role}</div>
-                                <p>${item.desc || ''}</p>
+                                <h3>${title}</h3>
+                                <div style="color:var(--primary); font-weight:bold;">${desc}</div>
+                                ${contactHTML}
                             </div>
                         </div>`;
                 } else {
@@ -451,8 +497,8 @@
                         <div class="card fade-in">
                             <img src="${item.img || 'https://via.placeholder.com/300'}" class="card-img">
                             <div class="card-body">
-                                <h3>${item.title}</h3>
-                                <p>${item.desc}</p>
+                                <h3>${title}</h3>
+                                <p>${desc}</p>
                                 ${item.link ? `<a href="${item.link}" target="_blank" class="card-btn">${item.linkText || btnText} <i class="fas fa-external-link-alt"></i></a>` : ''}
                             </div>
                         </div>`;
@@ -512,58 +558,84 @@
                 const snap = await getDoc(doc(db, "site_content", "settings"));
                 const data = snap.exists() ? snap.data() : {};
                 const imgs = data.heroImages || [];
-                
-                // Generate Image List HTML for Management
                 let imgListHTML = '<div class="admin-img-grid">';
                 imgs.forEach((img, idx) => {
-                    imgListHTML += `
-                    <div class="admin-img-item">
-                        <img src="${img}">
-                        <div class="admin-img-del" onclick="deleteHeroImage(${idx})">X</div>
-                    </div>`;
+                    imgListHTML += `<div class="admin-img-item"><img src="${img}"><div class="admin-img-del" onclick="deleteHeroImage(${idx})">X</div></div>`;
                 });
                 imgListHTML += '</div>';
 
                 content.innerHTML = `
                     <h2>تعديل الواجهة</h2>
                     <div class="admin-form-group">
-                        <label>العنوان الرئيسي</label><input id="in-hero-title" class="admin-input" value="${data.heroTitle || ''}">
-                        <label>الوصف</label><input id="in-hero-desc" class="admin-input" value="${data.heroDesc || ''}">
-                        <div style="display:flex; gap:10px; margin-top:10px;">
-                            <div style="flex:1"><label>نص الحدث (عربي)</label><input id="in-event-ar" class="admin-input" value="${data.eventTextAr || ''}" placeholder="حدث قادم..."></div>
-                            <div style="flex:1"><label>نص الحدث (فرنسي)</label><input id="in-event-fr" class="admin-input" value="${data.eventTextFr || ''}" placeholder="Prochain événement..."></div>
+                        <label>تغيير اللوجو (Logo)</label>
+                        <input type="file" id="logo-file" accept="image/*" class="admin-input">
+                        <button class="btn btn-warning" style="margin-top:5px;" onclick="uploadLogo()">حفظ اللوجو</button>
+                        <hr style="margin:20px 0;">
+
+                        <div class="lang-group">
+                            <div><span class="lang-label">العنوان (AR)</span><input id="in-ht-ar" class="admin-input" value="${data.heroTitle_ar || ''}"></div>
+                            <div><span class="lang-label">Titre (FR)</span><input id="in-ht-fr" class="admin-input" value="${data.heroTitle_fr || ''}"></div>
+                            <div><span class="lang-label">Title (EN)</span><input id="in-ht-en" class="admin-input" value="${data.heroTitle_en || ''}"></div>
                         </div>
-                        <label>رابط الحدث (Event Link)</label><input id="in-event-link" class="admin-input" value="${data.eventLink || ''}" placeholder="https://...">
+
+                        <div class="lang-group">
+                            <div><span class="lang-label">الوصف (AR)</span><input id="in-hd-ar" class="admin-input" value="${data.heroDesc_ar || ''}"></div>
+                            <div><span class="lang-label">Description (FR)</span><input id="in-hd-fr" class="admin-input" value="${data.heroDesc_fr || ''}"></div>
+                            <div><span class="lang-label">Description (EN)</span><input id="in-hd-en" class="admin-input" value="${data.heroDesc_en || ''}"></div>
+                        </div>
+
+                        <div class="lang-group">
+                            <div><span class="lang-label">حدث (AR)</span><input id="in-ev-ar" class="admin-input" value="${data.eventText_ar || ''}"></div>
+                            <div><span class="lang-label">Event (FR)</span><input id="in-ev-fr" class="admin-input" value="${data.eventText_fr || ''}"></div>
+                            <div><span class="lang-label">Event (EN)</span><input id="in-ev-en" class="admin-input" value="${data.eventText_en || ''}"></div>
+                        </div>
                         
+                        <label>رابط الحدث (Event Link)</label><input id="in-event-link" class="admin-input" value="${data.eventLink || ''}">
                         <label>الهاتف</label><input id="in-phone" class="admin-input" value="${data.phone || ''}">
                         <label>الايميل</label><input id="in-email" class="admin-input" value="${data.email || ''}">
-                        <button class="btn btn-primary" style="margin-top:10px;" onclick="saveSettings()">حفظ التغييرات</button>
+                        
+                        <button class="btn btn-primary" style="margin-top:10px;" onclick="saveSettings()">حفظ النصوص</button>
                     </div>
                     <div class="admin-form-group">
-                        <label>إدارة صور الخلفية</label>
-                        ${imgListHTML}
-                        <label>إضافة صورة جديدة</label>
-                        <input type="file" id="hero-file-in" accept="image/*" class="admin-input">
-                        <button class="btn btn-success" style="margin-top:5px;" onclick="uploadHeroImage()">رفع الصورة</button>
+                        <label>إدارة صور الخلفية</label>${imgListHTML}
+                        <label>إضافة صورة جديدة</label><input type="file" id="hero-file-in" accept="image/*" class="admin-input">
+                        <button class="btn btn-success" style="margin-top:5px;" onclick="uploadHeroImage()">رفع الخلفية</button>
                     </div>`;
             } else {
                 renderAdminList(tab, content);
             }
         }
 
+        window.uploadLogo = function() {
+            const file = document.getElementById('logo-file').files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = async function(e) {
+                await setDoc(doc(db, "site_content", "settings"), { logo: e.target.result }, { merge: true });
+                alert("تم تحديث اللوجو!");
+                location.reload(); // Refresh to see changes
+            };
+            reader.readAsDataURL(file);
+        }
+
         window.saveSettings = async function() {
             const newData = {
-                heroTitle: document.getElementById('in-hero-title').value,
-                heroDesc: document.getElementById('in-hero-desc').value,
-                eventTextAr: document.getElementById('in-event-ar').value, 
-                eventTextFr: document.getElementById('in-event-fr').value, 
-                eventLink: document.getElementById('in-event-link').value, // Save Link
+                heroTitle_ar: document.getElementById('in-ht-ar').value,
+                heroTitle_fr: document.getElementById('in-ht-fr').value,
+                heroTitle_en: document.getElementById('in-ht-en').value,
+                heroDesc_ar: document.getElementById('in-hd-ar').value,
+                heroDesc_fr: document.getElementById('in-hd-fr').value,
+                heroDesc_en: document.getElementById('in-hd-en').value,
+                eventText_ar: document.getElementById('in-ev-ar').value,
+                eventText_fr: document.getElementById('in-ev-fr').value,
+                eventText_en: document.getElementById('in-ev-en').value,
+                eventLink: document.getElementById('in-event-link').value,
                 phone: document.getElementById('in-phone').value,
                 email: document.getElementById('in-email').value
             };
-            
             await setDoc(doc(db, "site_content", "settings"), newData, { merge: true });
             
+            // Local Update
             const current = JSON.parse(localStorage.getItem('afmap_settings')) || {};
             const merged = { ...current, ...newData };
             localStorage.setItem('afmap_settings', JSON.stringify(merged));
@@ -582,12 +654,11 @@
                 imgs.push(e.target.result);
                 await setDoc(doc(db, "site_content", "settings"), { heroImages: imgs }, { merge: true });
                 alert("تم رفع الصورة!");
-                switchTab('hero'); // Refresh to show new image in list
+                switchTab('hero');
             };
             reader.readAsDataURL(file);
         }
 
-        // New function to delete a specific hero image
         window.deleteHeroImage = async function(index) {
             if(confirm("حذف هذه الصورة من الخلفية؟")) {
                 const snap = await getDoc(doc(db, "site_content", "settings"));
@@ -595,7 +666,7 @@
                     let imgs = snap.data().heroImages || [];
                     imgs.splice(index, 1);
                     await updateDoc(doc(db, "site_content", "settings"), { heroImages: imgs });
-                    switchTab('hero'); // Refresh list
+                    switchTab('hero');
                 }
             }
         }
@@ -607,10 +678,21 @@
                     <button class="btn btn-success" onclick="document.getElementById('add-box').classList.remove('hidden')">+ إضافة جديد</button>
                 </div>
                 <div id="add-box" class="admin-form-group hidden" style="border:2px solid var(--primary);">
-                    <h4>إضافة عنصر جديد</h4>
-                    <input id="new-title" class="admin-input" placeholder="العنوان / الاسم">
-                    <input id="new-desc" class="admin-input" placeholder="الوصف / المهام">
-                    <input id="new-link" class="admin-input" placeholder="رابط تحويل (اختياري - http://...)">
+                    <h4>إضافة عنصر جديد (3 لغات)</h4>
+                    <div class="lang-group">
+                        <div><span class="lang-label">عنوان (AR)</span><input id="new-t-ar" class="admin-input" placeholder="عربي"></div>
+                        <div><span class="lang-label">Titre (FR)</span><input id="new-t-fr" class="admin-input" placeholder="Français"></div>
+                        <div><span class="lang-label">Title (EN)</span><input id="new-t-en" class="admin-input" placeholder="English"></div>
+                    </div>
+                    <div class="lang-group">
+                        <div><span class="lang-label">وصف (AR)</span><input id="new-d-ar" class="admin-input" placeholder="عربي"></div>
+                        <div><span class="lang-label">Desc (FR)</span><input id="new-d-fr" class="admin-input" placeholder="Français"></div>
+                        <div><span class="lang-label">Desc (EN)</span><input id="new-d-en" class="admin-input" placeholder="English"></div>
+                    </div>
+                    
+                    ${colName === 'founders' ? `<input id="new-contact" class="admin-input" placeholder="معلومات اتصال (هاتف/ايميل)">` : 
+                      `<input id="new-link" class="admin-input" placeholder="رابط تحويل (اختياري)">`}
+                      
                     <input type="file" id="new-img" class="admin-input" accept="image/*">
                     <div style="display:flex; gap:10px; margin-top:10px;">
                         <button class="btn btn-primary" onclick="addItemToFirebase('${colName}')">حفظ ونشر</button>
@@ -621,38 +703,61 @@
 
             const listContainer = document.getElementById('admin-list-items');
             const q = await getDocs(collection(db, colName));
-            q.forEach(docSnap => {
-                const d = docSnap.data();
+            let items = [];
+            q.forEach(doc => items.push({ id: doc.id, ...doc.data() }));
+            items.sort((a, b) => (a.order || 0) - (b.order || 0));
+
+            items.forEach((d, idx) => {
                 listContainer.innerHTML += `
                     <div style="background:white; padding:15px; border-radius:8px; margin-bottom:10px; display:flex; justify-content:space-between; align-items:center; box-shadow:0 2px 5px rgba(0,0,0,0.05);">
                         <div style="display:flex; align-items:center; gap:10px;">
+                            <div style="display:flex; flex-direction:column; gap:2px;">
+                                <button class="order-btn" onclick="changeOrder('${colName}', '${d.id}', ${d.order || 0}, -1)">▲</button>
+                                <button class="order-btn" onclick="changeOrder('${colName}', '${d.id}', ${d.order || 0}, 1)">▼</button>
+                            </div>
                             ${d.img ? `<img src="${d.img}" style="width:40px; height:40px; border-radius:5px; object-fit:cover;">` : ''}
-                            <strong>${d.title || d.name || d.text}</strong>
+                            <strong>${d.title_ar || d.name_ar || d.title || '...'}</strong>
                         </div>
-                        <button class="btn btn-danger" onclick="deleteItem('${colName}', '${docSnap.id}')"><i class="fas fa-trash"></i></button>
+                        <button class="btn btn-danger" onclick="deleteItem('${colName}', '${d.id}')"><i class="fas fa-trash"></i></button>
                     </div>`;
             });
         }
 
         window.addItemToFirebase = function(colName) {
-            const title = document.getElementById('new-title').value;
-            const desc = document.getElementById('new-desc').value;
-            const link = document.getElementById('new-link').value;
+            const t_ar = document.getElementById('new-t-ar').value;
+            const t_fr = document.getElementById('new-t-fr').value;
+            const t_en = document.getElementById('new-t-en').value;
+            const d_ar = document.getElementById('new-d-ar').value;
+            const d_fr = document.getElementById('new-d-fr').value;
+            const d_en = document.getElementById('new-d-en').value;
             const file = document.getElementById('new-img').files[0];
-            if(!title) return alert("Required");
+
+            if(!t_ar) return alert("Arabic Title Required");
 
             const save = async (imgUrl) => {
-                let obj = { title, desc, link, img: imgUrl };
-                if (colName === 'stats') obj = { num: title, text: desc, icon: 'fa-star' };
-                if (colName === 'founders') obj = { name: title, role: desc, desc: '', img: imgUrl };
+                let obj = { 
+                    title_ar: t_ar, title_fr: t_fr, title_en: t_en,
+                    desc_ar: d_ar, desc_fr: d_fr, desc_en: d_en,
+                    img: imgUrl,
+                    order: Date.now() // Default order logic
+                };
+                
+                if (colName === 'stats') {
+                    // For stats, map title to num and desc to text for backward compat, but use langs for display
+                    obj.num = t_ar; obj.text = d_ar; obj.icon = 'fa-star';
+                }
+                if (colName === 'founders') {
+                    // Map generic fields to founder specific
+                    obj.name_ar = t_ar; obj.name_fr = t_fr; obj.name_en = t_en;
+                    obj.role_ar = d_ar; obj.role_fr = d_fr; obj.role_en = d_en;
+                    obj.contact = document.getElementById('new-contact').value;
+                    delete obj.title_ar; delete obj.desc_ar; // Cleanup
+                } else {
+                    obj.link = document.getElementById('new-link') ? document.getElementById('new-link').value : "";
+                }
+
                 await addDoc(collection(db, colName), obj);
                 alert("تمت الإضافة");
-                
-                const currentCache = JSON.parse(localStorage.getItem('afmap_'+colName)) || [];
-                currentCache.push(obj);
-                localStorage.setItem('afmap_'+colName, JSON.stringify(currentCache));
-                renderListUI(colName, currentCache);
-                
                 switchTab(colName);
             };
             if (file) {
@@ -662,20 +767,58 @@
             } else { save(null); }
         }
 
+        window.changeOrder = async function(colName, id, currentOrder, direction) {
+            // Simple swap logic: actually just changing the order value by +/- 1000 or swapping is complex in NoSQL without full read.
+            // Simplified: we just update this item's order to move it up/down in relative sort.
+            // A better hack for simple lists: swap order values with adjacent, OR just increment/decrement order by a large amount.
+            // Let's simply update order = Date.now() to move to bottom, or 0 to move top. 
+            // Better: Swap orders logic requires reading the list.
+            
+            // Re-fetch list to find adjacent
+            const q = await getDocs(collection(db, colName));
+            let items = [];
+            q.forEach(doc => items.push({ id: doc.id, ...doc.data() }));
+            items.sort((a, b) => (a.order || 0) - (b.order || 0));
+            
+            const index = items.findIndex(i => i.id === id);
+            if (index === -1) return;
+            
+            const targetIndex = index + direction;
+            if (targetIndex < 0 || targetIndex >= items.length) return; // Can't move
+            
+            const itemA = items[index];
+            const itemB = items[targetIndex];
+            
+            // Swap orders
+            const tempOrder = itemA.order || 0;
+            // If they are equal or missing, assign new timestamps
+            const orderA = itemB.order || Date.now();
+            const orderB = tempOrder || (Date.now() + 1);
+
+            await updateDoc(doc(db, colName, itemA.id), { order: orderA });
+            await updateDoc(doc(db, colName, itemB.id), { order: orderB });
+            
+            switchTab(colName);
+        }
+
         window.deleteItem = async function(colName, id) {
             if(confirm("حذف؟")) { await deleteDoc(doc(db, colName, id)); switchTab(colName); }
         }
 
         window.toggleLanguage = function() {
-            window.currentLang = window.currentLang === 'ar' ? 'fr' : 'ar';
+            if (window.currentLang === 'ar') window.currentLang = 'fr';
+            else if (window.currentLang === 'fr') window.currentLang = 'en';
+            else window.currentLang = 'ar';
+            
             const lang = window.currentLang;
-            document.getElementById('lang-text').innerText = lang === 'ar' ? 'Français' : 'العربية';
+            document.getElementById('lang-text').innerText = lang === 'ar' ? 'Français' : (lang === 'fr' ? 'English' : 'العربية');
             document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+            
             document.querySelectorAll('[data-key]').forEach(el => {
                 const key = el.getAttribute('data-key');
                 if (translations[lang][key]) el.innerText = translations[lang][key];
             });
-            loadFromCache();
+            loadFromCache(); // Re-render content
         }
 
         window.toggleMenu = function() {
