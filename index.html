@@ -1,4 +1,4 @@
-, <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
@@ -23,6 +23,20 @@
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Cairo', sans-serif; outline: none; }
         body { background-color: var(--bg); overflow-x: hidden; scroll-behavior: smooth; transition: 0.3s; }
         
+        /* --- Preloader --- */
+        #preloader {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #fff; z-index: 9999;
+            display: flex; justify-content: center; align-items: center;
+            flex-direction: column; transition: opacity 0.5s ease;
+        }
+        .loader-spinner {
+            width: 50px; height: 50px; border: 5px solid #f3f3f3;
+            border-top: 5px solid var(--primary); border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
         /* --- Animations --- */
         .fade-in { animation: fadeIn 0.8s ease-in-out; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
@@ -133,10 +147,7 @@
 
         /* --- Admin & Modals --- */
         .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 2000; display: none; justify-content: center; align-items: center; padding: 20px; backdrop-filter: blur(5px); }
-        
-        /* Privacy Modal Specific */
         .privacy-content { background: white; width: 100%; max-width: 600px; padding: 30px; border-radius: 10px; max-height: 80vh; overflow-y: auto; text-align: start; }
-
         .dashboard-container { 
             background: var(--dashboard-bg); width: 95vw; height: 95vh; border-radius: 15px; overflow: hidden; display: flex; 
             box-shadow: 0 20px 50px rgba(0,0,0,0.5);
@@ -157,11 +168,16 @@
         .btn-primary { background: var(--primary); }
         .btn-danger { background: #e74c3c; }
         .btn-success { background: #27ae60; }
-
         .hidden { display: none; }
     </style>
 </head>
 <body>
+
+    <!-- PRELOADER -->
+    <div id="preloader">
+        <div class="loader-spinner"></div>
+        <h3 style="margin-top:20px; color:var(--primary);">AFMAP</h3>
+    </div>
 
     <!-- Language Toggle -->
     <button class="lang-btn" onclick="toggleLanguage()">
@@ -197,17 +213,15 @@
     <section class="hero" id="hero">
         <div class="hero-content fade-in">
             <div class="event-wrapper">
-                <div class="event-badge event-glow" id="hero-event-text">Loading Event...</div>
+                <div class="event-badge event-glow" id="hero-event-text"></div>
             </div>
-            <h1 id="hero-title">AFMAP</h1>
-            <p id="hero-desc" style="font-size: 1.3rem; margin-bottom:20px;">Welcome</p>
+            <h1 id="hero-title"></h1>
+            <p id="hero-desc" style="font-size: 1.3rem; margin-bottom:20px;"></p>
         </div>
     </section>
 
     <!-- Stats -->
-    <div class="stats-bar" id="stats-display">
-        <div style="text-align:center; width:100%;">Loading Stats...</div>
-    </div>
+    <div class="stats-bar" id="stats-display"></div>
 
     <!-- Services -->
     <section class="section-container" style="background: white;" id="services">
@@ -237,13 +251,13 @@
     <section class="section-container" style="background: #2e7d32; color: white;" id="contact">
         <h2 class="section-title" style="color: white; border-color: white;" data-key="sec_contact">اتصل بنا</h2>
         <div style="text-align: center; font-size:1.2rem;">
-            <p><i class="fas fa-phone"></i> <span id="contact-phone">...</span></p>
-            <p style="margin-top:10px;"><i class="fas fa-envelope"></i> <span id="contact-email">...</span></p>
+            <p><i class="fas fa-phone"></i> <span id="contact-phone"></span></p>
+            <p style="margin-top:10px;"><i class="fas fa-envelope"></i> <span id="contact-email"></span></p>
             <p style="margin-top:10px;"><i class="fas fa-map-marker-alt"></i> الجزائر، العاصمة (Rouiba)</p>
         </div>
     </section>
 
-    <!-- Footer with New Links -->
+    <!-- Footer -->
     <footer>
         <div class="footer-links">
             <a href="#about" data-key="ft_about">من نحن</a>
@@ -255,21 +269,14 @@
 
     <!-- ================== MODALS ================== -->
 
-    <!-- Privacy Policy Modal -->
     <div class="modal" id="privacy-modal">
         <div class="privacy-content">
             <h2 style="color:var(--primary); margin-bottom:20px;">سياسة الخصوصية</h2>
             <p>نحن في المؤسسة الجزائرية للنباتات الطبية (AFMAP) نلتزم بحماية خصوصية زوارنا.</p>
-            <ul style="margin:20px 0; padding-inline-start:20px;">
-                <li>نحن لا نجمع معلومات شخصية دون إذنك.</li>
-                <li>يتم استخدام الكوكيز لتحسين تجربة المستخدم فقط.</li>
-                <li>جميع البيانات المسجلة محمية وآمنة.</li>
-            </ul>
             <button class="btn btn-primary" onclick="document.getElementById('privacy-modal').style.display='none'">إغلاق</button>
         </div>
     </div>
 
-    <!-- Login -->
     <div class="modal" id="login-modal">
         <div style="background:white; padding:30px; border-radius:10px; text-align:center; width:300px;">
             <h3 style="margin-bottom:15px; color:var(--primary);">Admin Login</h3>
@@ -279,10 +286,8 @@
         </div>
     </div>
 
-    <!-- DASHBOARD -->
     <div class="modal" id="dashboard-modal">
         <div class="dashboard-container">
-            <!-- Sidebar -->
             <div class="dash-sidebar">
                 <h3>AFMAP <span>CMS</span></h3>
                 <button class="dash-nav-btn active" onclick="switchTab('home')"><i class="fas fa-home"></i> نظرة عامة</button>
@@ -296,11 +301,7 @@
                     <button class="btn btn-danger" style="width:100%" onclick="location.reload()">تسجيل الخروج</button>
                 </div>
             </div>
-            
-            <!-- Content -->
-            <div class="dash-content" id="dash-content">
-                <!-- Injected via JS -->
-            </div>
+            <div class="dash-content" id="dash-content"></div>
         </div>
     </div>
 
@@ -309,7 +310,6 @@
         import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-analytics.js";
         import { getFirestore, doc, getDoc, setDoc, updateDoc, collection, getDocs, addDoc, deleteDoc, increment } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
-        // Firebase Config (Your specific ID)
         const firebaseConfig = {
             apiKey: "AIzaSyAaXp-gUOQ_G2s-kM8JhaqW8TJcJ4Nqcuo",
             authDomain: "comondi-fae4b.firebaseapp.com",
@@ -326,7 +326,6 @@
 
         // --- GLOBAL VARIABLES ---
         window.currentLang = 'ar';
-        // Settings cache to handle event text switching smoothly
         window.siteSettings = {}; 
 
         const translations = {
@@ -346,35 +345,67 @@
             }
         };
 
-        // --- MAIN FUNCTIONS ---
-        async function loadSiteData() {
+        // --- CACHE & LOAD SYSTEM ---
+        
+        // 1. Try to load from LocalStorage FIRST (Instant)
+        function loadFromCache() {
+            const cachedSettings = localStorage.getItem('afmap_settings');
+            if (cachedSettings) {
+                const data = JSON.parse(cachedSettings);
+                window.siteSettings = data;
+                renderHero(data);
+                renderContact(data);
+                window.heroImages = data.heroImages || [];
+                startSlider();
+            }
+
+            ['stats', 'services', 'products', 'blog', 'founders'].forEach(col => {
+                const cachedCol = localStorage.getItem('afmap_' + col);
+                if (cachedCol) renderListUI(col, JSON.parse(cachedCol));
+            });
+        }
+
+        // 2. Fetch from Firebase (Async) & Update Cache
+        async function fetchFreshData() {
             trackVisit();
+            
+            // Settings
             try {
                 const settingsSnap = await getDoc(doc(db, "site_content", "settings"));
                 if (settingsSnap.exists()) {
-                    window.siteSettings = settingsSnap.data();
-                    renderHero(window.siteSettings);
-                    renderContact(window.siteSettings);
-                    window.heroImages = window.siteSettings.heroImages || [];
+                    const data = settingsSnap.data();
+                    localStorage.setItem('afmap_settings', JSON.stringify(data)); // Save Cache
+                    window.siteSettings = data;
+                    renderHero(data);
+                    renderContact(data);
+                    window.heroImages = data.heroImages || [];
                     startSlider();
-                } else {
-                    document.getElementById('hero-title').innerText = "AFMAP";
                 }
             } catch (error) { console.error(error); }
 
-            renderCollection("stats", "stats-display");
-            renderCollection("services", "services-grid");
-            renderCollection("products", "products-grid");
-            renderCollection("blog", "blog-grid");
-            renderCollection("founders", "founders-grid");
+            // Collections
+            ['stats', 'services', 'products', 'blog', 'founders'].forEach(async col => {
+                const q = await getDocs(collection(db, col));
+                let items = [];
+                q.forEach(doc => items.push(doc.data()));
+                localStorage.setItem('afmap_' + col, JSON.stringify(items)); // Save Cache
+                renderListUI(col, items);
+            });
+
+            // Hide Preloader once fresh data is checked
+            setTimeout(() => {
+                const pre = document.getElementById('preloader');
+                if(pre) { pre.style.opacity = '0'; setTimeout(()=>pre.remove(), 500); }
+            }, 1000);
         }
 
+        // --- RENDER LOGIC ---
+
         function renderHero(data) {
-            document.getElementById('hero-title').innerText = data.heroTitle || "AFMAP";
+            document.getElementById('hero-title').innerText = data.heroTitle || "";
             document.getElementById('hero-desc').innerText = data.heroDesc || "";
-            // Render Event Text based on current language
             const eventText = window.currentLang === 'ar' ? (data.eventTextAr || data.eventText) : (data.eventTextFr || data.eventText);
-            document.getElementById('hero-event-text').innerText = eventText || "No Event";
+            document.getElementById('hero-event-text').innerText = eventText || "";
         }
 
         function renderContact(data) {
@@ -382,46 +413,43 @@
             document.getElementById('contact-email').innerText = data.email || "";
         }
 
-        async function renderCollection(colName, elId) {
-            const container = document.getElementById(elId);
-            container.innerHTML = ''; 
-            try {
-                const querySnapshot = await getDocs(collection(db, colName));
-                querySnapshot.forEach((doc) => {
-                    const item = doc.data();
-                    const btnText = window.currentLang === 'ar' ? translations.ar.btn_readmore : translations.fr.btn_readmore;
-                    
-                    if (colName === 'stats') {
-                        container.innerHTML += `
-                            <div class="stat-item fade-in">
-                                <i class="fas ${item.icon}"></i>
-                                <span class="stat-num">${item.num}</span>
-                                <span>${item.text}</span>
-                            </div>`;
-                    } else if (colName === 'founders') {
-                        container.innerHTML += `
-                            <div class="card fade-in" style="align-items:center; text-align:center;">
-                                <img src="${item.img || 'https://via.placeholder.com/150'}" style="width:120px; height:120px; border-radius:50%; margin-top:20px; border:3px solid var(--primary); object-fit: cover;">
-                                <div class="card-body">
-                                    <h3>${item.name}</h3>
-                                    <div style="color:var(--primary); font-weight:bold;">${item.role}</div>
-                                    <p>${item.desc || ''}</p>
-                                </div>
-                            </div>`;
-                    } else {
-                        // Added Optional Link Button here
-                        container.innerHTML += `
-                            <div class="card fade-in">
-                                <img src="${item.img || 'https://via.placeholder.com/300'}" class="card-img">
-                                <div class="card-body">
-                                    <h3>${item.title}</h3>
-                                    <p>${item.desc}</p>
-                                    ${item.link ? `<a href="${item.link}" target="_blank" class="card-btn">${item.linkText || btnText} <i class="fas fa-external-link-alt"></i></a>` : ''}
-                                </div>
-                            </div>`;
-                    }
-                });
-            } catch (e) { }
+        function renderListUI(colName, items) {
+            const container = document.getElementById(colName + (colName === 'stats' ? '-display' : '-grid'));
+            if (!container) return;
+            container.innerHTML = '';
+            
+            items.forEach(item => {
+                const btnText = window.currentLang === 'ar' ? translations.ar.btn_readmore : translations.fr.btn_readmore;
+                
+                if (colName === 'stats') {
+                    container.innerHTML += `
+                        <div class="stat-item fade-in">
+                            <i class="fas ${item.icon}"></i>
+                            <span class="stat-num">${item.num}</span>
+                            <span>${item.text}</span>
+                        </div>`;
+                } else if (colName === 'founders') {
+                    container.innerHTML += `
+                        <div class="card fade-in" style="align-items:center; text-align:center;">
+                            <img src="${item.img || 'https://via.placeholder.com/150'}" style="width:120px; height:120px; border-radius:50%; margin-top:20px; border:3px solid var(--primary); object-fit: cover;">
+                            <div class="card-body">
+                                <h3>${item.name}</h3>
+                                <div style="color:var(--primary); font-weight:bold;">${item.role}</div>
+                                <p>${item.desc || ''}</p>
+                            </div>
+                        </div>`;
+                } else {
+                    container.innerHTML += `
+                        <div class="card fade-in">
+                            <img src="${item.img || 'https://via.placeholder.com/300'}" class="card-img">
+                            <div class="card-body">
+                                <h3>${item.title}</h3>
+                                <p>${item.desc}</p>
+                                ${item.link ? `<a href="${item.link}" target="_blank" class="card-btn">${item.linkText || btnText} <i class="fas fa-external-link-alt"></i></a>` : ''}
+                            </div>
+                        </div>`;
+                }
+            });
         }
 
         function startSlider() {
@@ -430,7 +458,8 @@
             const heroEl = document.getElementById('hero');
             heroEl.style.backgroundImage = `url('${window.heroImages[0]}')`;
             if(window.heroImages.length > 1) {
-                setInterval(() => {
+                if(window.sliderInt) clearInterval(window.sliderInt);
+                window.sliderInt = setInterval(() => {
                     idx = (idx + 1) % window.heroImages.length;
                     heroEl.style.backgroundImage = `url('${window.heroImages[idx]}')`;
                 }, 3000);
@@ -441,9 +470,8 @@
             const today = new Date().toLocaleDateString();
             if (localStorage.getItem('last_visit') !== today) {
                 const statsRef = doc(db, "analytics", "visitors");
-                try {
-                    await updateDoc(statsRef, { daily: increment(1), monthly: increment(1) });
-                } catch (err) { await setDoc(statsRef, { daily: 1, monthly: 1 }); }
+                try { await updateDoc(statsRef, { daily: increment(1), monthly: increment(1) }); } 
+                catch (err) { await setDoc(statsRef, { daily: 1, monthly: 1 }); }
                 localStorage.setItem('last_visit', today);
             }
         }
@@ -476,18 +504,15 @@
                 const snap = await getDoc(doc(db, "site_content", "settings"));
                 const data = snap.exists() ? snap.data() : {};
                 
-                // Added Dual Language Event Fields
                 content.innerHTML = `
                     <h2>تعديل الواجهة</h2>
                     <div class="admin-form-group">
                         <label>العنوان الرئيسي</label><input id="in-hero-title" class="admin-input" value="${data.heroTitle || ''}">
                         <label>الوصف</label><input id="in-hero-desc" class="admin-input" value="${data.heroDesc || ''}">
-                        
                         <div style="display:flex; gap:10px; margin-top:10px;">
                             <div style="flex:1"><label>نص الحدث (عربي)</label><input id="in-event-ar" class="admin-input" value="${data.eventTextAr || ''}" placeholder="حدث قادم..."></div>
                             <div style="flex:1"><label>نص الحدث (فرنسي)</label><input id="in-event-fr" class="admin-input" value="${data.eventTextFr || ''}" placeholder="Prochain événement..."></div>
                         </div>
-
                         <label>الهاتف</label><input id="in-phone" class="admin-input" value="${data.phone || ''}">
                         <label>الايميل</label><input id="in-email" class="admin-input" value="${data.email || ''}">
                         <button class="btn btn-primary" style="margin-top:10px;" onclick="saveSettings()">حفظ التغييرات</button>
@@ -503,17 +528,25 @@
         }
 
         window.saveSettings = async function() {
-            await setDoc(doc(db, "site_content", "settings"), {
+            const newData = {
                 heroTitle: document.getElementById('in-hero-title').value,
                 heroDesc: document.getElementById('in-hero-desc').value,
-                eventTextAr: document.getElementById('in-event-ar').value, // Save Arabic
-                eventTextFr: document.getElementById('in-event-fr').value, // Save French
-                eventText: document.getElementById('in-event-ar').value, // Fallback
+                eventTextAr: document.getElementById('in-event-ar').value, 
+                eventTextFr: document.getElementById('in-event-fr').value, 
                 phone: document.getElementById('in-phone').value,
                 email: document.getElementById('in-email').value
-            }, { merge: true });
+            };
+            
+            await setDoc(doc(db, "site_content", "settings"), newData, { merge: true });
+            
+            // Update Cache & UI Instantly for Admin
+            const current = JSON.parse(localStorage.getItem('afmap_settings')) || {};
+            const merged = { ...current, ...newData };
+            localStorage.setItem('afmap_settings', JSON.stringify(merged));
+            renderHero(merged);
+            renderContact(merged);
+
             alert("تم الحفظ!");
-            loadSiteData();
         }
 
         window.uploadHeroImage = function() {
@@ -531,7 +564,6 @@
         }
 
         async function renderAdminList(colName, container) {
-            // Added Optional Link Input in Admin
             container.innerHTML = `
                 <div style="display:flex; justify-content:space-between; align-items:center;">
                     <h2>إدارة ${colName}</h2>
@@ -568,7 +600,7 @@
         window.addItemToFirebase = function(colName) {
             const title = document.getElementById('new-title').value;
             const desc = document.getElementById('new-desc').value;
-            const link = document.getElementById('new-link').value; // Get Link
+            const link = document.getElementById('new-link').value;
             const file = document.getElementById('new-img').files[0];
             if(!title) return alert("Required");
 
@@ -578,6 +610,13 @@
                 if (colName === 'founders') obj = { name: title, role: desc, desc: '', img: imgUrl };
                 await addDoc(collection(db, colName), obj);
                 alert("تمت الإضافة");
+                
+                // Update Cache Manually to prevent flicker for Admin
+                const currentCache = JSON.parse(localStorage.getItem('afmap_'+colName)) || [];
+                currentCache.push(obj);
+                localStorage.setItem('afmap_'+colName, JSON.stringify(currentCache));
+                renderListUI(colName, currentCache);
+                
                 switchTab(colName);
             };
             if (file) {
@@ -594,23 +633,14 @@
         window.toggleLanguage = function() {
             window.currentLang = window.currentLang === 'ar' ? 'fr' : 'ar';
             const lang = window.currentLang;
-            
             document.getElementById('lang-text').innerText = lang === 'ar' ? 'Français' : 'العربية';
             document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
-            
             document.querySelectorAll('[data-key]').forEach(el => {
                 const key = el.getAttribute('data-key');
                 if (translations[lang][key]) el.innerText = translations[lang][key];
             });
-
-            // Update Event Text Dynamically
-            if (window.siteSettings) {
-                renderHero(window.siteSettings);
-                // Force re-render grid buttons to update text
-                renderCollection("services", "services-grid");
-                renderCollection("products", "products-grid");
-                renderCollection("blog", "blog-grid");
-            }
+            // Re-render UI to update text
+            loadFromCache();
         }
 
         window.toggleMenu = function() {
@@ -620,7 +650,9 @@
         }
         window.openLoginModal = function() { toggleMenu(); document.getElementById('login-modal').style.display = 'flex'; }
         
-        loadSiteData();
+        // --- STARTUP SEQUENCE ---
+        loadFromCache(); // 1. Render Cache Instant
+        fetchFreshData(); // 2. Check Network & Update Cache
     </script>
 </body>
-</html>: "
+</html>
