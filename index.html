@@ -450,7 +450,6 @@
         // --- RENDER LOGIC ---
         function renderHeader(data) {
             const logoContainer = document.getElementById('header-logo');
-            // Explicitly set the HTML to the image if logo exists, ensuring refresh
             if (data.logo) {
                 logoContainer.innerHTML = `<img src="${data.logo}" style="height:50px;">`;
             } else {
@@ -639,21 +638,32 @@
 
         window.uploadLogo = function() {
             const file = document.getElementById('logo-file').files[0];
-            if (!file) return;
+            if (!file) return alert("الرجاء اختيار صورة أولاً");
+
+            if (file.size > 700 * 1024) {
+                return alert("حجم الصورة كبير جداً! يرجى اختيار صورة أقل من 700KB");
+            }
+
             const reader = new FileReader();
             reader.onload = async function(e) {
-                // Update Firebase
-                await setDoc(doc(db, "site_content", "settings"), { logo: e.target.result }, { merge: true });
-                
-                // Update Local Cache Immediately
-                const current = JSON.parse(localStorage.getItem('afmap_settings')) || {};
-                current.logo = e.target.result;
-                localStorage.setItem('afmap_settings', JSON.stringify(current));
-                
-                // Update DOM Immediately
-                renderHeader(current);
-                
-                alert("تم تحديث اللوجو بنجاح!");
+                try {
+                    const base64 = e.target.result;
+                    // 1. Update Firebase
+                    await setDoc(doc(db, "site_content", "settings"), { logo: base64 }, { merge: true });
+
+                    // 2. Update Local Cache
+                    const current = JSON.parse(localStorage.getItem('afmap_settings')) || {};
+                    current.logo = base64;
+                    localStorage.setItem('afmap_settings', JSON.stringify(current));
+
+                    // 3. Update UI
+                    renderHeader(current);
+
+                    alert("تم تغيير اللوجو بنجاح!");
+                } catch (error) {
+                    console.error("Logo Upload Error:", error);
+                    alert("حدث خطأ أثناء رفع اللوجو. قد تكون الصورة كبيرة جداً.");
+                }
             };
             reader.readAsDataURL(file);
         }
